@@ -1,0 +1,156 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+::selection {
+  background-color: rgba(255, 255, 255, 0.99);
+  color: rgba(0, 0, 0, 0.99);
+}
+
+body {
+  font-family: var(--font-orbitron);
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  background-color: #000000;
+  color: #ffffff;
+}
+
+@layer utilities {
+  .text-balance {
+    text-wrap: balance;
+  }
+
+  .text-glow {
+    text-shadow: 0 0 10px currentColor;
+  }
+
+  .blend-difference {
+    mix-blend-mode: difference;
+  }
+  
+  .glass-morphism {
+    @apply backdrop-blur-md bg-black/30 border border-neutral-800;
+    box-shadow: 0 0 20px rgba(0, 0, 0, 0.2), 0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+  }
+  
+  .content-cutout {
+    position: relative;
+    background-color: rgba(0, 0, 0, 0.8);
+    border: 1px solid rgba(50, 50, 50, 0.5);
+    border-radius: 0;
+    box-shadow: 0 4px 30px rgba(0, 0, 0, 0.3);
+    padding: 24px;
+  }
+  
+  .content-cutout::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+    background-image: 
+      /* Top left */
+      linear-gradient(to right, rgba(100, 100, 100, 0.6) 10px, transparent 10px),
+      linear-gradient(to bottom, rgba(100, 100, 100, 0.6) 10px, transparent 10px),
+      /* Top right */
+      linear-gradient(to left, rgba(100, 100, 100, 0.6) 10px, transparent 10px),
+      linear-gradient(to bottom, rgba(100, 100, 100, 0.6) 10px, transparent 10px),
+      /* Bottom left */
+      linear-gradient(to right, rgba(100, 100, 100, 0.6) 10px, transparent 10px),
+      linear-gradient(to top, rgba(100, 100, 100, 0.6) 10px, transparent 10px),
+      /* Bottom right */
+      linear-gradient(to left, rgba(100, 100, 100, 0.6) 10px, transparent 10px),
+      linear-gradient(to top, rgba(100, 100, 100, 0.6) 10px, transparent 10px);
+    background-position: 
+      /* Top left */
+      0 0,
+      0 0,
+      /* Top right */
+      100% 0,
+      100% 0,
+      /* Bottom left */
+      0 100%,
+      0 100%,
+      /* Bottom right */
+      100% 100%,
+      100% 100%;
+    background-size: 
+      10px 1px, /* Top left horizontal */
+      1px 10px, /* Top left vertical */
+      10px 1px, /* Top right horizontal */
+      1px 10px, /* Top right vertical */
+      10px 1px, /* Bottom left horizontal */
+      1px 10px, /* Bottom left vertical */
+      10px 1px, /* Bottom right horizontal */
+      1px 10px; /* Bottom right vertical */
+    background-repeat: no-repeat;
+  }
+}
+
+@layer base {
+  :root {
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 3.9%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 3.9%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 0 0% 100%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 240 3.7% 15.9%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 240 3.7% 15.9%;
+    --muted-foreground: 240 5% 64.9%;
+    --accent: 240 3.7% 15.9%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 62.8% 30.6%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 0 0% 14.9%;
+    --input: 0 0% 14.9%;
+    --ring: 0 0% 83.1%;
+    --radius: 0.5rem;
+  }
+
+  * {
+    @apply border-border;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    @apply font-bold tracking-tight;
+  }
+
+  h1 {
+    @apply text-4xl md:text-5xl lg:text-6xl leading-tight;
+  }
+
+  h2 {
+    @apply text-3xl md:text-4xl leading-tight;
+  }
+
+  h3 {
+    @apply text-2xl md:text-3xl leading-snug;
+  }
+
+  p {
+    @apply leading-relaxed text-neutral-300;
+  }
+
+  a {
+    @apply text-white transition-colors duration-300;
+  }
+}
+
+.mix-blend-difference {
+  mix-blend-mode: difference;
+}

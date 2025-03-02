@@ -1,0 +1,30 @@
+{
+  "glyphs": {
+    "L": { "ha": 600, "x_min": 0, "x_max": 600, "o": "M 100 0 L 100 700 L 500 700 L 500 600 L 200 600 L 200 0 Z" },
+    "U": { "ha": 600, "x_min": 0, "x_max": 600, "o": "M 100 300 L 100 700 L 200 700 L 200 300 A 100 100 0 0 1 400 300 L 400 700 L 500 700 L 500 300 A 200 200 0 0 0 100 300 Z" },
+    "K": { "ha": 600, "x_min": 0, "x_max": 600, "o": "M 100 0 L 100 700 L 200 700 L 200 400 L 400 700 L 530 700 L 300 350 L 530 0 L 400 0 L 200 300 L 200 0 Z" },
+    "W": { "ha": 600, "x_min": 0, "x_max": 600, "o": "M 50 700 L 150 700 L 200 300 L 300 700 L 400 300 L 450 700 L 550 700 L 450 0 L 350 0 L 300 300 L 250 0 L 150 0 Z" },
+    "I": { "ha": 600, "x_min": 0, "x_max": 600, "o": "M 250 0 L 250 700 L 350 700 L 350 0 Z" },
+    "Y": { "ha": 600, "x_min": 0, "x_max": 600, "o": "M 250 0 L 250 300 L 50 700 L 150 700 L 300 350 L 450 700 L 550 700 L 350 300 L 350 0 Z" },
+    "A": { "ha": 600, "x_min": 0, "x_max": 600, "o": "M 0 0 L 200 700 L 400 700 L 600 0 L 500 0 L 350 500 L 250 500 L 100 0 Z M 270 400 L 330 400 L 430 50 L 370 50 Z" }
+  },
+  "familyName": "Geist",
+  "ascender": 800,
+  "descender": -200,
+  "underlinePosition": -100,
+  "underlineThickness": 50,
+  "boundingBox": { "yMin": -200, "xMin": 0, "yMax": 800, "xMax": 600 },
+  "resolution": 1000,
+  "original_font_information": {
+    "format": 0,
+    "copyright": "Copyright (c) 2023, Vercel",
+    "fontFamily": "Geist",
+    "fontSubfamily": "Bold",
+    "uniqueID": "Geist Bold",
+    "fullName": "Geist Bold",
+    "version": "Version 1.0",
+    "postScriptName": "Geist-Bold"
+  },
+  "cssFontWeight": "bold",
+  "cssFontStyle": "normal"
+}
