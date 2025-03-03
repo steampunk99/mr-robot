@@ -1,11 +1,23 @@
 "use client"
 
+import NavigationButton from "@/components/navigation-button"
 import { useRef, useState, useEffect } from "react"
 import { motion } from "framer-motion"
+import { usePathname } from "next/navigation"
+import CustomLink from "@/components/custom-link"
+import AboutSection from "@/components/about-section"
 import Link from "next/link"
 import Image from "next/image"
-import { ArrowUpRight } from "lucide-react"
-import { AnimatedAvatar } from "@/components/animated-avatar"
+import { ArrowUpRight, ChevronUp } from "lucide-react"
+import AnimatedAvatar from "@/components/animated-avatar"
+import MinimalistBackground from "@/components/minimalist-background"
+import SocialAvatars from "@/components/social-avatars"
+import { fadeInUp } from "@/animations/fade-in-up"
+import ScrollIndicator from "@/components/scroll-indicator"
+import CustomCursor from "@/components/custom-cursor"
+import AnimatedTextReveal from "@/components/animated-text-reveal"
+import SteampunkRobot from "@/components/steampunk-robot"
+import ParagraphReveal, { ParallaxText, ContentFade } from "@/components/paragraph-reveal"
 
 const projects = [
   {
@@ -53,130 +65,243 @@ const projects = [
 ]
 
 export default function Home() {
-  const containerRef = useRef(null)
-  const [decryptedText, setDecryptedText] = useState("")
-  const heroText = "I build cool shit"
+  const heroSectionRef = useRef(null)
+  const aboutSectionRef = useRef(null)
+  const workSectionRef = useRef(null)
+  const contactSectionRef = useRef(null)
+  const pathname = usePathname()
+  const [showScrollTop, setShowScrollTop] = useState(false)
+  const [isMobile, setIsMobile] = useState(false)
 
+  // Hide browser scrollbar
   useEffect(() => {
-    let iteration = 0
-    const interval = setInterval(() => {
-      setDecryptedText((prevText) => {
-        const newText = heroText
-          .split("")
-          .map((char, index) => {
-            if (index < iteration) {
-              return heroText[index]
-            }
-            return String.fromCharCode(Math.floor(Math.random() * 26) + 65)
-          })
-          .join("")
+    document.documentElement.style.scrollbarWidth = 'none'; // Firefox
+    document.documentElement.style.msOverflowStyle = 'none'; // IE/Edge
+    
+    // For Chrome, Safari, etc.
+    const styleElement = document.createElement('style');
+    styleElement.textContent = `
+      ::-webkit-scrollbar {
+        display: none;
+      }
+      body {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+      }
+    `;
+    document.head.appendChild(styleElement);
+    
+    // Check if on mobile
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    }
+    
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+    
+    return () => {
+      document.documentElement.style.scrollbarWidth = '';
+      document.documentElement.style.msOverflowStyle = '';
+      document.head.removeChild(styleElement);
+      window.removeEventListener('resize', checkMobile);
+    }
+  }, []);
 
-        if (iteration >= heroText.length) {
-          clearInterval(interval)
-        }
-        iteration += 1 / 3
-        return newText
-      })
-    }, 30)
+  // Show scroll to top button after scrolling down
+  useEffect(() => {
+    const handleScroll = () => {
+      if (window.scrollY > window.innerHeight) {
+        setShowScrollTop(true)
+      } else {
+        setShowScrollTop(false)
+      }
+    }
 
-    return () => clearInterval(interval)
+    window.addEventListener("scroll", handleScroll)
+    return () => window.removeEventListener("scroll", handleScroll)
   }, [])
 
+  const scrollToTop = () => {
+    window.scrollTo({
+      top: 0,
+      behavior: "smooth"
+    })
+  }
+
+  // Sections for scroll indicator
+  const sections = [
+    { id: "hero", name: "Home" },
+    { id: "about", name: "About" },
+    { id: "work", name: "Work" },
+    { id: "contact", name: "Contact" }
+  ]
+
+  // Fade-in animation variants with faster timing
+  const fadeInUp = {
+    hidden: { opacity: 0, y: 20 },
+    visible: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.5,
+        ease: [0.22, 1, 0.36, 1],
+      },
+    },
+  }
+
   return (
-    <div className="relative selection:bg-white selection:text-black bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNjAiIGhlaWdodD0iNjAiIHZpZXdCb3g9IjAgMCA2MCA2MCIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj48ZyBmaWxsPSJub25lIiBmaWxsLXJ1bGU9ImV2ZW5vZGQiPjxnIGZpbGw9IiMyMjIiIGZpbGwtb3BhY2l0eT0iMC4wNSI+PHBhdGggZD0iTTM2IDM0djZoNnYtNmgtNnptMCAwdjZoLTZ2LTZoNnptNi02djZoNnYtNmgtNnptLTYgMHY2aC02di02aDZ6bS02LTZ2NmgtNnYtNmg2em0xMiAwdjZoNnYtNmgtNnoiLz48L2c+PC9nPjwvc3ZnPg==')]">
-      <div className="fixed inset-0 bg-gradient-to-t from-black via-black/90 to-black/50 pointer-events-none"></div>
-      <main ref={containerRef} className="relative py-20">
-        <div className="max-w-[900px] mx-auto w-full px-4">
-          <div className="content-cutout">
-            {/* Hero Section */}
-            <section className="relative z-10 flex flex-col items-center justify-center min-h-[90vh] py-20">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                animate={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                className="text-center"
-              >
-                <div className="flex justify-center mb-8">
-                  <AnimatedAvatar />
-                </div>
+    <main className="w-full min-h-screen bg-black text-white">
+      {/* Custom cursor component */}
+      <CustomCursor />
+      
+      {/* Scroll indicator */}
+      <ScrollIndicator sections={sections} />
+      
+      {/* Scroll to top button */}
+      <motion.button
+        className="fixed right-8 bottom-8 w-10 h-10 flex items-center justify-center border border-neutral-800 rounded-full z-50 bg-black"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ 
+          opacity: showScrollTop ? 1 : 0, 
+          y: showScrollTop ? 0 : 20,
+          pointerEvents: showScrollTop ? "auto" : "none"
+        }}
+        onClick={scrollToTop}
+        whileHover={{ scale: 1.1 }}
+        whileTap={{ scale: 0.95 }}
+      >
+        <ChevronUp size={16} className="text-white" />
+      </motion.button>
 
-                <motion.div
-                  initial={{ opacity: 0, y: 20 }}
-                  animate={{ opacity: 1, y: 0 }}
-                  transition={{ delay: 0.2, duration: 0.5 }}
-                  className="space-y-6"
-                >
-                  <h2 className="text-sm tracking-wider uppercase text-neutral-400">3D Web Developer</h2>
-
-                  <h1 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight text-glow">{decryptedText}</h1>
-
-                  <p className="text-neutral-400 text-lg max-w-2xl mx-auto">
-                    Hi, I'm Lukwiya Bonnie. I specialize in creating interactive 3D web experiences that push the
-                    boundaries of what's possible on the web.
-                  </p>
-
-                  <motion.div
-                    initial={{ opacity: 0 }}
-                    animate={{ opacity: 1 }}
-                    transition={{ delay: 0.4, duration: 0.5 }}
-                    className="flex items-center justify-center gap-6 pt-4"
-                  >
-                    <Link href="/work" className="text-sm hover:text-neutral-200 transition-colors">
-                      View Work
-                    </Link>
-                    <span className="text-neutral-600">•</span>
-                    <Link href="/contact" className="text-sm hover:text-neutral-200 transition-colors">
-                      Get in Touch
-                    </Link>
-                  </motion.div>
-                </motion.div>
-              </motion.div>
-            </section>
-
-            {/* Projects Section */}
-            <section className="py-20 border-t border-neutral-800">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
-                className="space-y-2 mb-16"
-              >
-                <div className="text-neutral-400 text-sm tracking-wider uppercase">Selected Work</div>
-                <h2 className="text-2xl font-bold">Recent projects and experiments</h2>
-              </motion.div>
-
-              <div className="space-y-32">
-                {projects.map((project, index) => (
-                  <ProjectCard key={project.id} project={project} index={index} />
-                ))}
-              </div>
-            </section>
-
-            {/* Contact Section */}
-            <section className="py-20 border-t border-neutral-800">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5 }}
-                viewport={{ once: true }}
-                className="space-y-6 text-center"
-              >
-                <div className="text-neutral-400 text-sm tracking-wider uppercase">Get in Touch</div>
-                <h2 className="text-2xl font-bold">Let's create something amazing together</h2>
-                <Link
-                  href="/contact"
-                  className="inline-flex items-center text-sm text-neutral-200 hover:text-neutral-100 transition-colors"
-                >
-                  Contact Me
-                  <ArrowUpRight className="ml-1 w-4 h-4" />
-                </Link>
-              </motion.div>
-            </section>
+      {/* Hero section */}
+      <section 
+        id="hero" 
+        ref={heroSectionRef} 
+        className="relative min-h-screen flex items-center justify-center overflow-hidden"
+      >
+        {/* Background wrapper */}
+        <div className="w-full h-full absolute top-0 left-0">
+          <MinimalistBackground />
+          
+          {/* Large Steampunk Robot SVG in background */}
+          <div className="absolute right-[5%] bottom-[10%] opacity-20 hidden md:block">
+            <SteampunkRobot width={600} height={600} section="home" className="filter drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
           </div>
         </div>
-      </main>
-    </div>
+        
+        {/* Vertical line - visible only on desktop */}
+        <div className="absolute top-0 right-[15%] h-screen w-px bg-neutral-800/30 z-10 hidden md:block" />
+        
+        {/* Hero content with asymmetrical Japanese-inspired layout */}
+        <div className="relative z-10 w-full max-w-7xl mx-auto px-4 md:px-8 grid grid-cols-1 md:grid-cols-12 gap-8 items-center">
+          {/* Left content area - typographic focus */}
+          <div className="md:col-span-7 md:col-start-2 mt-20 md:mt-0">
+            {/* Subtle indicator line */}
+            <div className="w-16 h-px bg-neutral-500/50 mb-8"></div>
+            
+            {/* Name with horizontal emphasis - with animated text reveal */}
+            <h1 className="text-4xl md:text-6xl lg:text-7xl font-light tracking-wider leading-tight">
+              <AnimatedTextReveal 
+                text="steampunk99" 
+                className="block"
+                delay={300}
+              />
+              <AnimatedTextReveal 
+                text="Software Engineer" 
+                className="block text-2xl md:text-3xl mt-2 text-neutral-500 font-extralight tracking-widest"
+                delay={800}
+              />
+            </h1>
+            
+            {/* Minimalist description with ample whitespace - using new ParagraphReveal component */}
+            <ParagraphReveal className="mt-12 text-lg font-light text-neutral-400 max-w-md leading-relaxed tracking-wide">
+              Creating minimal and thoughtful digital experiences through code and design.
+            </ParagraphReveal>
+            
+            {/* CTA area with asymmetrical layout */}
+            <div className="mt-16 inline-flex flex-col items-start">
+              <Link
+                href="/work"
+                className="group flex items-center space-x-2 border-b border-neutral-800 pb-1 hover:border-neutral-500 transition-colors duration-300"
+              >
+                <span className="text-sm tracking-widest uppercase font-light">View Work</span>
+                <ArrowUpRight size={14} className="text-neutral-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </Link>
+            </div>
+          </div>
+          
+          {/* Right content area - visual focus with open space */}
+          <div className="md:col-span-3 flex justify-end mt-6 md:mt-0">
+            <SocialAvatars />
+          </div>
+        </div>
+        
+        {/* Scroll indicator - only on desktop */}
+        <div className="absolute bottom-16 left-1/2 transform -translate-x-1/2 flex flex-col items-center hidden md:flex">
+          <span className="text-xs uppercase tracking-[0.2em] text-neutral-500 font-light mb-4">Scroll</span>
+          <div className="w-[1px] h-16 bg-neutral-700/30 relative">
+            <motion.div 
+              className="absolute top-0 left-0 w-full bg-white h-1/3"
+              animate={{ 
+                y: [0, 20, 0],
+                opacity: [0.7, 1, 0.7]
+              }}
+              transition={{
+                duration: 2,
+                repeat: Infinity,
+                ease: "easeInOut"
+              }}
+            />
+          </div>
+        </div>
+      </section>
+
+      {/* About section */}
+      <section id="about" ref={aboutSectionRef}>
+        <AboutSection />
+      </section>
+
+      {/* Projects Section */}
+      <section id="work" ref={workSectionRef} className="py-32 px-4 md:px-8 bg-black">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="space-y-2 mb-16"
+        >
+          <div className="text-neutral-400 text-sm tracking-wider uppercase">Selected Work</div>
+          <h2 className="text-2xl font-bold">Recent projects and experiments</h2>
+        </motion.div>
+
+        <div className="space-y-32">
+          {projects.map((project, index) => (
+            <ProjectCard key={project.id} project={project} index={index} />
+          ))}
+        </div>
+      </section>
+
+      {/* Contact Section */}
+      <section id="contact" ref={contactSectionRef} className="py-20 border-t border-neutral-800">
+        <motion.div
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5 }}
+          viewport={{ once: true }}
+          className="space-y-6 text-center"
+        >
+          <div className="text-neutral-400 text-sm tracking-wider uppercase">Get in Touch</div>
+          <h2 className="text-2xl font-bold">Let's create something amazing together</h2>
+          <Link
+            href="/contact"
+            className="inline-flex items-center text-sm text-neutral-200 hover:text-neutral-100 transition-colors"
+          >
+            Contact Me
+            <ArrowUpRight className="ml-1 w-4 h-4" />
+          </Link>
+        </motion.div>
+      </section>
+    </main>
   )
 }
 

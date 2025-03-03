@@ -14,7 +14,7 @@ export default function AboutPage() {
         <h1 className="text-4xl md:text-5xl font-bold mb-8 font-display">About Me</h1>
         <div className="space-y-6 font-sans">
           <p>
-            I'm Lukwiya Bonnie, a 3D Web Developer based in Kampala, Uganda. With a passion for blending art and
+            I'm Lukwiya Bonnie, a software engineer based in Kampala, Uganda. With a passion for blending art and
             technology, I create immersive digital experiences that push the boundaries of what's possible on the web.
           </p>
           <p>

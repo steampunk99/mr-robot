@@ -46,7 +46,7 @@ export function AnimatedAvatar() {
         transition={{ duration: 0.3 }}
       >
         <Avatar className="w-full h-full">
-          <AvatarImage src="https://avatars.githubusercontent.com/u/46764703?v=4" alt="Lukwiya Bonnie" />
+          <AvatarImage src="/profilepic.jpg" alt="Lukwiya Bonnie" />
           <AvatarFallback className="bg-neutral-900 text-white text-lg">LB</AvatarFallback>
         </Avatar>
       </motion.div>
