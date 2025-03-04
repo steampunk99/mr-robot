@@ -50,7 +50,7 @@ const MinimalistShape = ({
 const SquareLine = ({ size, positionX, positionY }) => {
   return (
     <motion.div 
-      className="absolute border border-neutral-500/20"
+      className="absolute border border-neutral-500"
       style={{
         width: size,
         height: size,
@@ -59,8 +59,8 @@ const SquareLine = ({ size, positionX, positionY }) => {
       }}
       initial={{ opacity: 0, scale: 0.9 }}
       animate={{ 
-        opacity: [0.2, 0.5, 0.2],
-        scale: [0.9, 1, 0.9],
+        opacity: [0.2, 0.4, 0.2],
+        scale: [0.9, 1, 0.7],
         rotate: [0, 180, 360]
       }}
       transition={{
