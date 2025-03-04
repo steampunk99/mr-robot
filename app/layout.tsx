@@ -18,7 +18,7 @@ const orbitron = Orbitron({
 
 export const metadata: Metadata = {
   title: "steampunk99 | Software Engineer",
-  description: "Portfolio of Steampunk99, a Software Engineer based in Kampala",
+  description: "Software Engineer based in Kampala",
   generator: 'steampunk99'
 }
 

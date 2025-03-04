@@ -47,7 +47,7 @@ const AboutSection = () => {
       {/* Horizontal separator line */}
       <div className="absolute top-1/3 left-0 w-full h-px bg-neutral-800/30" />
       
-      <div className="max-w-7xl mx-auto w-full px-4 md:px-8 relative z-10">
+      <div className="max-w-7xl  mx-auto w-full px-4 md:px-8 relative z-10 my-[150px]">
         {/* Section marker - inspired by Japanese minimalism */}
         <div className="mb-12">
           <div className="w-12 h-px bg-neutral-500/50 mb-6"></div>
@@ -129,10 +129,10 @@ const AboutSection = () => {
         </div>
         
         {/* Skills section - Japanese-inspired minimalist cards, now categorized */}
-        <div className="mt-24">
+        <div className="my-24 ">
           <ParallaxText
             baseVelocity={1}
-            className="text-xs font-light p-12"
+            className="text-xs font-light p-12 mb-12 ml-8"
           >
             Skillset
           </ParallaxText>

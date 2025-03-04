@@ -1,132 +1,124 @@
 "use client"
 
-import type React from "react"
+import type { ReactNode } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import { usePathname } from "next/navigation"
-import { useEffect, useState } from "react"
+import { useEffect, useState, useCallback } from "react"
 import { useSmoothScroll } from "@/context/smooth-scroll"
 
-export function PageTransition({ children }: { children: React.ReactNode }) {
+// Define section types and colors as constants outside the component
+type Section = "home" | "about" | "work" | "contact"
+
+const SECTION_COLORS: Record<Section, string> = {
+  home: "#ffffff", // White for home route
+  about: "#e0d5b8", // Warm cream
+  work: "#d6dde2", // Soft blue-gray
+  contact: "#d9cee0", // Gentle purple-gray
+}
+
+export function PageTransition({ children }: { children: ReactNode }) {
   const pathname = usePathname()
   const { lenis } = useSmoothScroll()
   const [key, setKey] = useState(pathname)
-  
+
+  // Get current section based on pathname - memoized with useCallback
+  const getSection = useCallback((): Section => {
+    if (pathname.includes("about")) return "about"
+    if (pathname.includes("work")) return "work"
+    if (pathname.includes("contact")) return "contact"
+    return "home"
+  }, [pathname])
+
   // Ensure we get unique keys on each path change for better mobile animations
   useEffect(() => {
     setKey(pathname + "-" + Date.now())
   }, [pathname])
-  
-  // Reset scroll position on page change
+
+  // Reset scroll position on page change with proper cleanup
   useEffect(() => {
     if (lenis) {
       // Slight delay to ensure content is ready
-      setTimeout(() => {
+      const timer = setTimeout(() => {
         lenis.scrollTo(0, { immediate: true })
       }, 100)
-    }
-  }, [pathname, lenis])
 
-  // Determine section based on pathname
-  const getSection = () => {
-    if (pathname.includes('about')) return 'about'
-    if (pathname.includes('work')) return 'work'
-    if (pathname.includes('contact')) return 'contact'
-    return 'home'
-  }
-  
-  // Section-based colors
-  const sectionColors = {
-    home: "#d9d9d9",     // Light gray
-    about: "#e0d5b8",    // Warm cream
-    work: "#d6dde2",     // Soft blue-gray
-    contact: "#d9cee0"   // Gentle purple-gray
-  };
-  
+      return () => clearTimeout(timer)
+    }
+  }, [lenis])
+
   // Get current section color
-  const currentColor = sectionColors[getSection()]
+  const currentColor = SECTION_COLORS[getSection()]
+
+  // Simplified transition block properties for better performance
+  const createTransitionProps = (position: "top" | "middle" | "bottom", isExit: boolean, delay: number) => {
+    const positionClasses = {
+      top: "top-[72px] bottom-2/3",
+      middle: "top-1/3 bottom-1/3",
+      bottom: "top-2/3 bottom-0",
+    }
+
+    return {
+      className: `fixed ${positionClasses[position]} left-0 right-0 z-50`,
+      style: { backgroundColor: currentColor },
+      initial: {
+        scaleX: isExit ? 0 : 1,
+        originX: isExit ? 0 : "100%",
+      },
+      animate: {
+        scaleX: 0,
+        originX: isExit ? 0 : "100%",
+      },
+      exit: isExit
+        ? {
+            scaleX: 1,
+            originX: 0,
+          }
+        : undefined,
+      transition: {
+        duration: isExit ? 0.7 : 1,
+        ease: "easeInOut", // Simplified easing function
+        delay,
+      },
+    }
+  }
 
   return (
     <AnimatePresence mode="wait">
       <motion.div key={key} className="relative">
-        {/* Exit animations - staggered blocks (left to right) */}
-        {/* First block (top) */}
-        <motion.div
-          className="fixed top-[72px] bottom-2/3 left-0 right-0 z-50"
-          style={{ backgroundColor: currentColor }}
-          initial={{ scaleX: 0, originX: 0 }}
-          animate={{ scaleX: 0, originX: 0 }}
-          exit={{ scaleX: 1, originX: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1] }}
-        />
-        
-        {/* Second block (middle) */}
-        <motion.div
-          className="fixed top-1/3 bottom-1/3 left-0 right-0 z-50"
-          style={{ backgroundColor: currentColor }}
-          initial={{ scaleX: 0, originX: 0 }}
-          animate={{ scaleX: 0, originX: 0 }}
-          exit={{ scaleX: 1, originX: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.15 }}
-        />
-        
-        {/* Third block (bottom) */}
-        <motion.div
-          className="fixed top-2/3 bottom-0 left-0 right-0 z-50"
-          style={{ backgroundColor: currentColor }}
-          initial={{ scaleX: 0, originX: 0 }}
-          animate={{ scaleX: 0, originX: 0 }}
-          exit={{ scaleX: 1, originX: 0 }}
-          transition={{ duration: 0.7, ease: [0.22, 1, 0.36, 1], delay: 0.3 }}
-        />
+        {/* Apply the same transition to all routes including home */}
+        <>
+          {/* Exit animations - staggered blocks (left to right) */}
+          <motion.div {...createTransitionProps("top", true, 0)} />
+          <motion.div {...createTransitionProps("middle", true, 0.15)} />
+          <motion.div {...createTransitionProps("bottom", true, 0.3)} />
 
-        {/* Entrance animations - staggered blocks (right to left) */}
-        {/* First block (top) */}
-        <motion.div
-          className="fixed top-[72px] bottom-2/3 left-0 right-0 z-50"
-          style={{ backgroundColor: currentColor }}
-          initial={{ scaleX: 1, originX: "100%" }}
-          animate={{ scaleX: 0, originX: "100%" }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-        />
-        
-        {/* Second block (middle) */}
-        <motion.div
-          className="fixed top-1/3 bottom-1/3 left-0 right-0 z-50"
-          style={{ backgroundColor: currentColor }}
-          initial={{ scaleX: 1, originX: "100%" }}
-          animate={{ scaleX: 0, originX: "100%" }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
-        />
-        
-        {/* Third block (bottom) */}
-        <motion.div
-          className="fixed top-2/3 bottom-0 left-0 right-0 z-50"
-          style={{ backgroundColor: currentColor }}
-          initial={{ scaleX: 1, originX: "100%" }}
-          animate={{ scaleX: 0, originX: "100%" }}
-          transition={{ duration: 1, ease: [0.22, 1, 0.36, 1], delay: 0.6 }}
-        />
-        
-        <motion.div
-          className="relative z-10"
-          initial={{ opacity: 0 }}
-          animate={{ 
-            opacity: 1,
-            transition: { 
-              duration: 0.8, 
-              delay: 1 
-            }
-          }}
-          exit={{ 
-            opacity: 0,
-            transition: { 
-              duration: 0.3 
-            }
-          }}
-        >
-          {children}
-        </motion.div>
+          {/* Entrance animations - staggered blocks (right to left) */}
+          <motion.div {...createTransitionProps("top", false, 0.2)} />
+          <motion.div {...createTransitionProps("middle", false, 0.4)} />
+          <motion.div {...createTransitionProps("bottom", false, 0.6)} />
+
+          <motion.div
+            className="relative z-10"
+            initial={{ opacity: 0 }}
+            animate={{
+              opacity: 1,
+              transition: {
+                duration: 0.8,
+                delay: 1,
+              },
+            }}
+            exit={{
+              opacity: 0,
+              transition: {
+                duration: 0.3,
+              },
+            }}
+          >
+            {children}
+          </motion.div>
+        </>
       </motion.div>
     </AnimatePresence>
   )
 }
+

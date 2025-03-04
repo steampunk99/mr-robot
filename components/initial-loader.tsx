@@ -94,7 +94,7 @@ export default function InitialLoader() {
           <GridPattern />
 
           {/* Exit Animation Blocks (Left to Right) */}
-          {(phase === "exit" || phase === "entrance" || phase === "complete") && (
+          {phase === "exit" && (
             <>
               <motion.div
                 className="fixed top-0 bottom-2/3 left-0 right-0 z-[10000]"
@@ -128,21 +128,21 @@ export default function InitialLoader() {
                 style={{ backgroundColor: homeColor }}
                 initial={{ scaleX: 1, originX: "100%" }}
                 animate={{ scaleX: 0 }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1] }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
               />
               <motion.div
                 className="fixed top-1/3 bottom-1/3 left-0 right-0 z-[10001]"
                 style={{ backgroundColor: homeColor }}
                 initial={{ scaleX: 1, originX: "100%" }}
                 animate={{ scaleX: 0 }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 + 0.2 }}
               />
               <motion.div
                 className="fixed top-2/3 bottom-0 left-0 right-0 z-[10001]"
                 style={{ backgroundColor: homeColor }}
                 initial={{ scaleX: 1, originX: "100%" }}
                 animate={{ scaleX: 0 }}
-                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.4 }}
+                transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 + 0.4 }}
               />
             </>
           )}
