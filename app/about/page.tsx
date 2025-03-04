@@ -14,22 +14,16 @@ export default function AboutPage() {
         <h1 className="text-4xl md:text-5xl font-bold mb-8 font-display">About Me</h1>
         <div className="space-y-6 font-sans">
           <p>
-            I'm Lukwiya Bonnie, a software engineer based in Kampala, Uganda. With a passion for blending art and
-            technology, I create immersive digital experiences that push the boundaries of what's possible on the web.
+            I'm a software engineer based in Kampala, Uganda.
           </p>
           <p>
-            My expertise lies in using cutting-edge technologies like Three.js, WebGL, and React to build interactive 3D
-            web applications and visualizations. I strive to create seamless, performant experiences that captivate
-            users and bring ideas to life in the digital realm.
+          I've come to find inspiration in the simplicity of lines, the balance of empty space, and the profound impact of what is left unsaid. This appreciation for the subtle interplay of space and form is what fuels my work.
           </p>
           <p>
-            With a background in both design and development, I bring a unique perspective to every project. I'm
-            constantly exploring new techniques and technologies to stay at the forefront of web development and 3D
-            graphics.
+          By embracing the principles of negative space, asymmetrical balance, and deliberate simplicity, I aim to craft interfaces that invite reflection and inspire wonder—proving that even in the realm of web development, art can flourish.
           </p>
           <p>
-            When I'm not coding, you can find me experimenting with generative art, contributing to open-source
-            projects, or mentoring aspiring developers in my community.
+          For me, every new project is more than a task—it’s an invitation to explore uncharted horizons and push the creative boundaries further. Each assignment presents a unique opportunity to experiment with innovative techniques, transforming complex ideas into intuitive digital experiences. The act of creation becomes an exhilarating adventure, where every line of code and every design decision is a step toward capturing a refined blend of beauty and functionality.
           </p>
         </div>
       </motion.div>

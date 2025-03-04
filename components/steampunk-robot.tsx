@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useState } from 'react'
+import React, { useState, useEffect, useRef } from 'react'
 import { motion } from 'framer-motion'
 
 interface SteampunkRobotProps {
@@ -21,6 +21,10 @@ const SteampunkRobot: React.FC<SteampunkRobotProps> = ({
   section = 'home'
 }) => {
   const [isHovered, setIsHovered] = useState(false)
+  const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
+  const [eyePositions, setEyePositions] = useState({ leftX: 70, leftY: 85, rightX: 130, rightY: 85 })
+  const [isBlinking, setIsBlinking] = useState(false)
+  const svgRef = useRef<SVGSVGElement>(null)
   
   // Section-based colors
   const sectionColors = {
@@ -33,54 +37,68 @@ const SteampunkRobot: React.FC<SteampunkRobotProps> = ({
   // Use provided color or the section color
   const robotColor = color || sectionColors[section];
   
-  // Animation variants for the robot parts
-  const gearVariants = {
-    idle: {
-      rotate: [0, 360],
-      transition: { 
-        duration: 20, 
-        ease: "linear", 
-        repeat: Infinity 
-      }
-    },
-    hover: {
-      rotate: [0, 360],
-      transition: { 
-        duration: 10, 
-        ease: "linear", 
-        repeat: Infinity 
+  // Handle mouse movement to track cursor position - only for non-logo robots
+  useEffect(() => {
+    if (isLogo) return; // Skip for logo version
+    
+    const handleMouseMove = (e: MouseEvent) => {
+      if (svgRef.current) {
+        const svgRect = svgRef.current.getBoundingClientRect()
+        const svgCenterX = svgRect.left + svgRect.width / 2
+        const svgCenterY = svgRect.top + svgRect.height / 2
+        
+        setMousePosition({
+          x: (e.clientX - svgCenterX) / (svgRect.width / 2),
+          y: (e.clientY - svgCenterY) / (svgRect.height / 2)
+        })
       }
     }
-  }
-
+    
+    window.addEventListener('mousemove', handleMouseMove)
+    return () => window.removeEventListener('mousemove', handleMouseMove)
+  }, [isLogo])
+  
+  // Update eye positions based on mouse position - only for non-logo robots
+  useEffect(() => {
+    if (isLogo) return; // Skip for logo version
+    
+    const eyeMaxMove = 4
+    
+    setEyePositions({
+      leftX: 70 + mousePosition.x * eyeMaxMove,
+      leftY: 85 + mousePosition.y * eyeMaxMove,
+      rightX: 130 + mousePosition.x * eyeMaxMove,
+      rightY: 85 + mousePosition.y * eyeMaxMove
+    })
+  }, [mousePosition, isLogo])
+  
+  // Random blinking effect
+  useEffect(() => {
+    const blinkInterval = setInterval(() => {
+      if (Math.random() > 0.7) {
+        setIsBlinking(true)
+        setTimeout(() => setIsBlinking(false), 150)
+      }
+    }, 3000)
+    
+    return () => clearInterval(blinkInterval)
+  }, [])
+  
+  // Animation variant for the antenna only (minimal animation)
   const antennaVariants = {
     idle: {
       y: [0, -3, 0],
-      scale: [1, 1.05, 1],
       transition: { 
-        duration: 2, 
-        ease: "easeInOut", 
-        repeat: Infinity 
-      }
-    },
-    hover: {
-      y: [0, -5, 0],
-      scale: [1, 1.2, 1],
-      transition: { 
-        duration: 1, 
+        duration: 3, 
         ease: "easeInOut", 
         repeat: Infinity 
       }
     }
-  }
-  
-  const robotVariants = {
-    idle: { scale: 1 },
-    hover: { scale: 1.1 }
   }
   
   return (
     <motion.svg 
+      ref={svgRef}
       xmlns="http://www.w3.org/2000/svg" 
       width={isLogo ? 48 : width} 
       height={isLogo ? 48 : height} 
@@ -89,28 +107,8 @@ const SteampunkRobot: React.FC<SteampunkRobotProps> = ({
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 0.8 }}
-      variants={robotVariants}
-      whileHover="hover"
-      onHoverStart={() => setIsHovered(true)}
-      onHoverEnd={() => setIsHovered(false)}
     >
-      <defs>
-        {/* Subtle glow filter */}
-        <filter id="glow" x="-20%" y="-20%" width="140%" height="140%">
-          <feFlood result="flood" floodColor="#ffffff" floodOpacity="0.3" />
-          <feComposite in="flood" in2="SourceGraphic" operator="in" result="mask" />
-          <feGaussianBlur in="mask" stdDeviation="5" result="blur" />
-          <feComposite in="SourceGraphic" in2="blur" operator="over" />
-        </filter>
-        {/* Inner shadow filter for a subtle 3D effect */}
-        <filter id="innerShadow" x="-20%" y="-20%" width="140%" height="140%">
-          <feOffset result="offOut" in="SourceAlpha" dx="0" dy="3" />
-          <feGaussianBlur result="blurOut" in="offOut" stdDeviation="3" />
-          <feBlend in="SourceGraphic" in2="blurOut" mode="normal" />
-        </filter>
-      </defs>
-
-      {/* Robot head shape - only outline */}
+      {/* Robot head shape */}
       <rect 
         x="50" 
         y="60" 
@@ -118,58 +116,78 @@ const SteampunkRobot: React.FC<SteampunkRobotProps> = ({
         height="90" 
         rx="10" 
         stroke={robotColor} 
-        strokeWidth="1.25" 
+        strokeWidth="2" 
         fill="none"
       />
       
-      {/* Left eye gear */}
-      <motion.g 
-        variants={gearVariants} 
-        animate={isHovered ? "hover" : "idle"} 
-        style={{ originX: "70px", originY: "85px" }}
-      >
-        <circle cx="70" cy="85" r="12" stroke={robotColor} strokeWidth="1.25" fill="none"/>
-        {/* Gear teeth details */}
-        <line x1="70" y1="65" x2="70" y2="68" stroke={robotColor} strokeWidth="1.25"/>
-        <line x1="70" y1="105" x2="70" y2="108" stroke={robotColor} strokeWidth="1.25"/>
-        <line x1="55" y1="85" x2="58" y2="85" stroke={robotColor} strokeWidth="1.25"/>
-        <line x1="85" y1="85" x2="88" y2="85" stroke={robotColor} strokeWidth="1.25"/>
-      </motion.g>
+      {/* Left eye outline */}
+      <circle cx="70" cy="85" r="15" stroke={robotColor} strokeWidth="2" fill="none"/>
+      
+      {/* Left eyeball - follows cursor and blinks */}
+      <circle
+        cx={isLogo ? 70 : eyePositions.leftX}
+        cy={isLogo ? 85 : eyePositions.leftY}
+        r={isBlinking ? 0.5 : 5}
+        fill={robotColor}
+      />
+      
+      {/* Right eye outline */}
+      <circle cx="130" cy="85" r="15" stroke={robotColor} strokeWidth="2" fill="none"/>
+      
+      {/* Right eyeball - follows cursor and blinks */}
+      <circle
+        cx={isLogo ? 130 : eyePositions.rightX}
+        cy={isLogo ? 85 : eyePositions.rightY}
+        r={isBlinking ? 0.5 : 5}
+        fill={robotColor}
+      />
+      
+      {/* Static left gear (no animation) */}
+      <g>
+        <circle cx="40" cy="85" r="15" stroke={robotColor} strokeWidth="2" fill="none"/>
+        <line x1="40" y1="63" x2="40" y2="70" stroke={robotColor} strokeWidth="2"/>
+        <line x1="40" y1="100" x2="40" y2="107" stroke={robotColor} strokeWidth="2"/>
+        <line x1="18" y1="85" x2="25" y2="85" stroke={robotColor} strokeWidth="2"/>
+        <line x1="55" y1="85" x2="62" y2="85" stroke={robotColor} strokeWidth="2"/>
+        <line x1="26" y1="71" x2="31" y2="76" stroke={robotColor} strokeWidth="2"/>
+        <line x1="26" y1="99" x2="31" y2="94" stroke={robotColor} strokeWidth="2"/>
+        <line x1="54" y1="71" x2="49" y2="76" stroke={robotColor} strokeWidth="2"/>
+        <line x1="54" y1="99" x2="49" y2="94" stroke={robotColor} strokeWidth="2"/>
+      </g>
 
-      {/* Right eye gear */}
-      <motion.g 
-        variants={gearVariants} 
-        animate={isHovered ? "hover" : "idle"} 
-        style={{ originX: "130px", originY: "85px" }}
-      >
-        <circle cx="130" cy="85" r="12" stroke={robotColor} strokeWidth="1.25" fill="none"/>
-        {/* Gear teeth details */}
-        <line x1="130" y1="65" x2="130" y2="68" stroke={robotColor} strokeWidth="1.25"/>
-        <line x1="130" y1="105" x2="130" y2="108" stroke={robotColor} strokeWidth="1.25"/>
-        <line x1="115" y1="85" x2="118" y2="85" stroke={robotColor} strokeWidth="1.25"/>
-        <line x1="145" y1="85" x2="148" y2="85" stroke={robotColor} strokeWidth="1.25"/>
-      </motion.g>
+      {/* Static right gear (no animation) */}
+      <g>
+        <circle cx="160" cy="85" r="15" stroke={robotColor} strokeWidth="2" fill="none"/>
+        <line x1="160" y1="63" x2="160" y2="70" stroke={robotColor} strokeWidth="2"/>
+        <line x1="160" y1="100" x2="160" y2="107" stroke={robotColor} strokeWidth="2"/>
+        <line x1="138" y1="85" x2="145" y2="85" stroke={robotColor} strokeWidth="2"/>
+        <line x1="175" y1="85" x2="182" y2="85" stroke={robotColor} strokeWidth="2"/>
+        <line x1="146" y1="71" x2="151" y2="76" stroke={robotColor} strokeWidth="2"/>
+        <line x1="146" y1="99" x2="151" y2="94" stroke={robotColor} strokeWidth="2"/>
+        <line x1="174" y1="71" x2="169" y2="76" stroke={robotColor} strokeWidth="2"/>
+        <line x1="174" y1="99" x2="169" y2="94" stroke={robotColor} strokeWidth="2"/>
+      </g>
 
-      {/* Antenna for a futuristic touch */}
+      {/* Antenna with minimal animation */}
       <motion.g 
         variants={antennaVariants} 
-        animate={isHovered ? "hover" : "idle"}
+        animate="idle"
       >
-        <line x1="100" y1="30" x2="100" y2="60" stroke={robotColor} strokeWidth="1.25"/>
+        <line x1="100" y1="30" x2="100" y2="60" stroke={robotColor} strokeWidth="2"/>
         <circle 
           cx="100" 
           cy="25" 
-          r="5" 
+          r="6" 
           stroke={robotColor} 
-          strokeWidth="1.25"
+          strokeWidth="2"
           fill="none"
         />
         <circle 
           cx="100" 
           cy="25" 
-          r="2" 
+          r="3" 
           stroke={robotColor} 
-          strokeWidth="1"
+          strokeWidth="1.5"
           fill="none"
         />
       </motion.g>
@@ -178,15 +196,15 @@ const SteampunkRobot: React.FC<SteampunkRobotProps> = ({
       <path
         d="M70,130 L80,125 L90,130 L100,125 L110,130 L120,125 L130,130"
         stroke={robotColor}
-        strokeWidth="1.25"
+        strokeWidth="2"
         fill="none"
       />
 
       {/* Subtle rivet details for texture */}
-      <circle cx="50" cy="60" r="2" stroke={robotColor} strokeWidth="1.25" fill="none"/>
-      <circle cx="150" cy="60" r="2" stroke={robotColor} strokeWidth="1.25" fill="none"/>
-      <circle cx="50" cy="140" r="2" stroke={robotColor} strokeWidth="1.25" fill="none"/>
-      <circle cx="150" cy="140" r="2" stroke={robotColor} strokeWidth="1.25" fill="none"/>
+      <circle cx="50" cy="60" r="3" stroke={robotColor} strokeWidth="1.5" fill="none"/>
+      <circle cx="150" cy="60" r="3" stroke={robotColor} strokeWidth="1.5" fill="none"/>
+      <circle cx="50" cy="140" r="3" stroke={robotColor} strokeWidth="1.5" fill="none"/>
+      <circle cx="150" cy="140" r="3" stroke={robotColor} strokeWidth="1.5" fill="none"/>
     </motion.svg>
   )
 }

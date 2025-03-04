@@ -3,10 +3,10 @@ import type { Metadata } from "next"
 import { Orbitron } from "next/font/google"
 import { Navigation } from "@/components/navigation"
 import { PageTransition } from "@/components/page-transition"
-import { NavigationProvider } from "@/context/navigation-context"
 import { SmoothScrollProvider } from "@/context/smooth-scroll"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { ScrollProgress } from "@/components/scroll-progress"
+import InitialLoader from "@/components/initial-loader"
 import "./globals.css"
 
 const orbitron = Orbitron({
@@ -32,12 +32,10 @@ export default function RootLayout({
       <body className={`${orbitron.className} font-sans bg-black text-white`}>
         <div className="fixed inset-0 bg-black"></div>
         <SmoothScrollProvider>
-          <NavigationProvider>
-            <ScrollProgress />
-            <ScrollToTop />
-            <Navigation />
-            <PageTransition>{children}</PageTransition>
-          </NavigationProvider>
+          <InitialLoader />
+          <ScrollProgress />
+          <Navigation />
+          <PageTransition>{children}</PageTransition>
         </SmoothScrollProvider>
       </body>
     </html>

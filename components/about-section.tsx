@@ -3,7 +3,7 @@
 import { useRef } from "react"
 import { motion, useInView } from "framer-motion"
 import { fadeInUp } from "@/animations/fade-in-up"
-import ParagraphReveal, { ContentFade } from "@/components/paragraph-reveal"
+import ParagraphReveal, { ContentFade,ParallaxText,parallaxText } from "@/components/paragraph-reveal"
 import SteampunkRobot from "@/components/steampunk-robot"
 
 // Organize skills into categories
@@ -16,14 +16,17 @@ const skillsByCategory = {
   "Languages": [
     { name: "TypeScript", level: "Advanced" },
     { name: "Python", level: "Advanced" },
+    { name: "Html, css", level: "Advanced" },
   ],
   "Backend": [
-    { name: "Express", level: "Advanced" },
+    { name: "Express.js", level: "Advanced" },
+    { name: "FastAPI", level: "Advanced" },
+    { name: "Prisma ORM", level: "Advanced DB" },
   ],
-  "AI & Integration": [
-    { name: "ML Integration", level: "Intermediate" },
+  "Machine Learning": [
+    { name: "Model Fine-tuning", level: "Intermediate" },
     { name: "Chatbot Integration", level: "Advanced" },
-    { name: "Agent Integration", level: "Intermediate" },
+    { name: "Agent Orchestration", level: "Advanced" },
   ]
 }
 
@@ -48,7 +51,7 @@ const AboutSection = () => {
         {/* Section marker - inspired by Japanese minimalism */}
         <div className="mb-12">
           <div className="w-12 h-px bg-neutral-500/50 mb-6"></div>
-          <h2 className="text-2xl font-light tracking-wider">About</h2>
+          <ParallaxText baseVelocity={-1} className=" font-light tracking-wider p-4">Background</ParallaxText>
         </div>
         
         {/* Bio section with focus on typography and whitespace - now with ParagraphReveal */}
@@ -58,23 +61,17 @@ const AboutSection = () => {
               className="text-lg md:text-xl leading-relaxed font-light text-neutral-300 mb-8"
               staggerAmount={0.4}
             >
-              I'm a full-stack web developer specializing in creating immersive 3D experiences for the web. With a focus on TypeScript and React, I build digital experiences that are both visually engaging and functionally robust.
+             I have always been captivated by the quiet elegance of abstract forms and the understated Art in minimalism. This love for the subtle interplay of space and form has guided and now fuels my work as a web developer.
             </ParagraphReveal>
             
-            <ParagraphReveal 
-              className="text-lg md:text-xl leading-relaxed font-light text-neutral-300 mb-8" 
-              delay={0.2}
-              staggerAmount={0.4}
-            >
-              My work is heavily influenced by Japanese minimalist design principles — embracing negative space, asymmetrical balance, and the concept of "Ma" (間) — the powerful interval between elements that creates rhythm and emphasis.
-            </ParagraphReveal>
+          
             
             <ParagraphReveal 
               className="text-lg md:text-xl leading-relaxed font-light text-neutral-300" 
               delay={0.4}
               staggerAmount={0.4}
             >
-              I've recently expanded my skillset to include ML model integration, building and fine-tuning AI models, and implementing chatbot and agent systems into web applications while maintaining performance and clean design.
+            Every new project is an invitation to explore new horizons, to push creative boundaries further—an endeavor that makes the act of creation an exhilarating experience. 
             </ParagraphReveal>
           </div>
           
@@ -133,15 +130,13 @@ const AboutSection = () => {
         
         {/* Skills section - Japanese-inspired minimalist cards, now categorized */}
         <div className="mt-24">
-          <motion.h3 
-            variants={fadeInUp}
-            initial="hidden"
-            whileInView="visible"
-            viewport={{ once: true }}
-            className="text-xl font-light tracking-wider mb-12"
+          <ParallaxText
+            baseVelocity={1}
+            className="text-xs font-light p-12"
           >
-            Skills & Expertise
-          </motion.h3>
+            Skillset
+          </ParallaxText>
+          
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-12 md:gap-16">
             {/* Render each category */}

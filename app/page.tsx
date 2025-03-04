@@ -1,20 +1,17 @@
 "use client"
 
-import NavigationButton from "@/components/navigation-button"
+
 import { useRef, useState, useEffect } from "react"
 import { motion } from "framer-motion"
 import { usePathname } from "next/navigation"
-import CustomLink from "@/components/custom-link"
 import AboutSection from "@/components/about-section"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowUpRight, ChevronUp } from "lucide-react"
-import AnimatedAvatar from "@/components/animated-avatar"
 import MinimalistBackground from "@/components/minimalist-background"
 import SocialAvatars from "@/components/social-avatars"
 import { fadeInUp } from "@/animations/fade-in-up"
 import ScrollIndicator from "@/components/scroll-indicator"
-import CustomCursor from "@/components/custom-cursor"
 import AnimatedTextReveal from "@/components/animated-text-reveal"
 import SteampunkRobot from "@/components/steampunk-robot"
 import ParagraphReveal, { ParallaxText, ContentFade } from "@/components/paragraph-reveal"
@@ -151,9 +148,6 @@ export default function Home() {
 
   return (
     <main className="w-full min-h-screen bg-black text-white">
-      {/* Custom cursor component */}
-      <CustomCursor />
-      
       {/* Scroll indicator */}
       <ScrollIndicator sections={sections} />
       
@@ -214,17 +208,25 @@ export default function Home() {
             </h1>
             
             {/* Minimalist description with ample whitespace - using new ParagraphReveal component */}
-            <ParagraphReveal className="mt-12 text-lg font-light text-neutral-400 max-w-md leading-relaxed tracking-wide">
-              Creating minimal and thoughtful digital experiences through code and design.
-            </ParagraphReveal>
+            <ContentFade direction="up" className="mt-12 text-lg font-light text-neutral-400 max-w-md leading-relaxed tracking-wide">
+              Pushing the boundaries of what is possible on the web⚡.
+            </ContentFade>
             
             {/* CTA area with asymmetrical layout */}
-            <div className="mt-16 inline-flex flex-col items-start">
+            <div className="mt-16 inline-flex flex-col items-start space-y-6">
               <Link
                 href="/work"
                 className="group flex items-center space-x-2 border-b border-neutral-800 pb-1 hover:border-neutral-500 transition-colors duration-300"
               >
                 <span className="text-sm tracking-widest uppercase font-light">View Work</span>
+                <ArrowUpRight size={14} className="text-neutral-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
+              </Link>
+              
+              <Link
+                href="/contact"
+                className="group flex items-center space-x-2 border-b border-neutral-800 pb-1 hover:border-neutral-500 transition-colors duration-300"
+              >
+                <span className="text-sm tracking-widest uppercase font-light">Get in Touch</span>
                 <ArrowUpRight size={14} className="text-neutral-500 group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform duration-300" />
               </Link>
             </div>
