@@ -13,53 +13,10 @@ import SocialAvatars from "@/components/social-avatars"
 import { fadeInUp } from "@/animations/fade-in-up"
 import ScrollIndicator from "@/components/scroll-indicator"
 import AnimatedTextReveal from "@/components/animated-text-reveal"
-import SteampunkRobot from "@/components/steampunk-robot"
+import SteampunkRobotFull from "@/components/steampunk-robotfull"
 import ParagraphReveal, { ParallaxText, ContentFade } from "@/components/paragraph-reveal"
+import projects from "@/data/projects.json"
 
-const projects = [
-  {
-    id: 1,
-    title: "3D Product Configurator",
-    description: "Interactive product visualization with real-time customization",
-    image: "/5.png",
-    tags: ["Three.js", "React", "WebGL"],
-  },
-  {
-    id: 2,
-    title: "Data Visualization Platform",
-    description: "Real-time 3D data visualization for financial analytics",
-    image: "/overview.png",
-    tags: ["WebGL", "D3.js", "Three.js"],
-  },
-  {
-    id: 3,
-    title: "Virtual Gallery",
-    description: "Immersive virtual art gallery experience",
-    image: "/7654.jpg",
-    tags: ["Three.js", "React", "GLSL"],
-  },
-  {
-    id: 4,
-    title: "Mobile AR Application",
-    description: "Augmented reality experiences for mobile devices",
-    image: "/mobile.png",
-    tags: ["AR.js", "A-Frame", "JavaScript"],
-  },
-  {
-    id: 5,
-    title: "Interactive Registration Portal",
-    description: "Modern registration system with 3D elements",
-    image: "/reg1.png",
-    tags: ["React", "NextJS", "Animation"],
-  },
-  {
-    id: 6,
-    title: "Video Streaming Platform",
-    description: "High-performance video streaming with WebGL effects",
-    image: "/video after overview.png",
-    tags: ["WebGL", "Three.js", "Streaming"],
-  },
-]
 
 export default function Home() {
   const heroSectionRef = useRef(null)
@@ -73,7 +30,7 @@ export default function Home() {
   // Hide browser scrollbar
   useEffect(() => {
     document.documentElement.style.scrollbarWidth = 'none'; // Firefox
-    document.documentElement.style.msOverflowStyle = 'none'; // IE/Edge
+
     
     // For Chrome, Safari, etc.
     const styleElement = document.createElement('style');
@@ -98,7 +55,6 @@ export default function Home() {
     
     return () => {
       document.documentElement.style.scrollbarWidth = '';
-      document.documentElement.style.msOverflowStyle = '';
       document.head.removeChild(styleElement);
       window.removeEventListener('resize', checkMobile);
     }
@@ -177,9 +133,16 @@ export default function Home() {
         <div className="w-full h-full absolute top-0 left-0">
           <MinimalistBackground />
           
-          {/* Large Steampunk Robot SVG in background */}
-          <div className="absolute right-[5%] bottom-[10%] opacity-20 hidden md:block">
-            <SteampunkRobot width={600} height={600} section="home" className="filter drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]" />
+          {/* Large Steampunk Robot SVG in background - Removed motion wrapper */}
+          <div className="absolute right-[5%] top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
+            <SteampunkRobotFull 
+              width={600} 
+              height={600} 
+              section="home" 
+              className="filter drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
+              // Disable internal motion animations to prevent conflicts
+              disableMotion={true}
+            />
           </div>
         </div>
         
@@ -254,8 +217,8 @@ export default function Home() {
                 ease: "easeInOut"
               }}
             />
-          </div>
-        </div>
+          </div> 
+             </div>
       </section>
 
       {/* About section */}
@@ -273,11 +236,11 @@ export default function Home() {
           className="space-y-2 mb-16"
         >
           <div className="text-neutral-400 text-sm tracking-wider uppercase">Selected Work</div>
-          <h2 className="text-2xl font-bold">Recent projects and experiments</h2>
+          <ParallaxText baseVelocity={-2} className="text-2xl p-24 font-bold">Recent projects</ParallaxText>
         </motion.div>
 
         <div className="space-y-32">
-          {projects.map((project, index) => (
+          {projects.projects.slice(0,4).map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
@@ -336,11 +299,12 @@ function ProjectCard({ project, index }) {
         <div className="space-y-4">
           <Link href={`/work/${project.id}`} className="block">
             <div className="flex items-start justify-between gap-4">
-              <h3 className="text-xl md:text-2xl font-bold group-hover:text-neutral-200 transition-colors">
+              <ParagraphReveal className="text-xl md:text-2xl font-bold group-hover:text-neutral-200 transition-colors">
                 {project.title}
-              </h3>
+              </ParagraphReveal>
               <ArrowUpRight className="w-5 h-5 text-neutral-200 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
             </div>
+            <ContentFade direction="up">
             <p className="text-neutral-500 my-4 text-base md:text-lg">{project.description}</p>
             <div className="flex flex-wrap gap-2">
               {project.tags.map((tag) => (
@@ -352,6 +316,7 @@ function ProjectCard({ project, index }) {
                 </span>
               ))}
             </div>
+            </ContentFade>
           </Link>
         </div>
       </div>

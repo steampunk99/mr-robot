@@ -4,6 +4,9 @@ import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
+import { ParallaxText,MaskedText } from "./paragraph-reveal"
+import SteampunkRobot from "./steampunk-robot"
+import SteampunkRobotFull from "./steampunk-robotfull"
 
 const SocialAvatars = () => {
   const [mousePosition, setMousePosition] = useState({ x: 0, y: 0 })
@@ -54,7 +57,7 @@ const SocialAvatars = () => {
     )
     
     // Normalize distance (closer = higher value)
-    const maxDistance = 150
+    const maxDistance = 250
     const normalizedDistance = Math.max(0, 1 - distance / maxDistance)
     return normalizedDistance
   }
@@ -66,7 +69,7 @@ const SocialAvatars = () => {
       src: "/profilepic.jpg",
       alt: "Personal Avatar",
       href: "https://twitter.com/bonnie_lukwiya",
-      size: isMobile ? 28 : 36,
+      size: isMobile ? 64 : 72,
       expandable: true
     },
     {
@@ -74,15 +77,15 @@ const SocialAvatars = () => {
       src: "/github-avatar.svg",
       alt: "GitHub",
       href: "https://github.com/steampunk99",
-      size: isMobile ? 24 : 30,
+      size: isMobile ? 34 : 40,
       expandable: false
     },
     {
       id: "instagram",
-      src: "/instagram-avatar.svg",
-      alt: "Instagram",
-      href: "https://instagram.com/bonnie_lukwiya",
-      size: isMobile ? 20 : 26,
+      src: "/reddit.png",
+      alt: "Reddit",
+      href: "https://www.reddit.com/user/PureHeroine______/",
+      size: isMobile ? 25 : 35,
       expandable: false
     },
   ]
@@ -119,25 +122,19 @@ const SocialAvatars = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             transition={{ duration: 0.3 }}
-            className="fixed inset-0 bg-black/80 z-50 flex items-center justify-center"
+            className="fixed inset-0  z-50 flex items-center justify-center"
             onClick={() => setExpandedAvatar(null)}
           >
             <motion.div
               initial={{ scale: 0.5, opacity: 0 }}
               animate={{ scale: 1, opacity: 1 }}
-              exit={{ scale: 0.5, opacity: 0 }}
-              transition={{ type: "spring", damping: 20 }}
+              exit={{ scale: 0.7, opacity: 0 }}
+              transition={{ type: "spring", damping: 5 }}
               className="relative rounded-full overflow-hidden"
               style={{ width: '180px', height: '180px' }}
               onClick={(e) => e.stopPropagation()}
             >
-              <Image
-                src="/profilepic.jpg"
-                alt="Personal Avatar"
-                width={180}
-                height={180}
-                className="rounded-full grayscale hover:grayscale-0 transition-all duration-300"
-              />
+              <SteampunkRobotFull height={400} width={260} section="home" className="relative z-10" />
               <div 
                 className="absolute inset-0 rounded-full"
                 style={{ 
@@ -145,16 +142,11 @@ const SocialAvatars = () => {
                 }}
               />
               
-              <div className="absolute inset-0 rounded-full border-2 border-white/40" />
+              <div className="absolute inset-0 rounded-sm " />
             </motion.div>
-            <motion.p 
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 0.7, y: 0 }}
-              exit={{ opacity: 0, y: 20 }}
-              className="absolute bottom-40 text-white/70 text-sm font-light tracking-wider"
-            >
-              Tap anywhere to close
-            </motion.p>
+          
+          
+           
           </motion.div>
         )}
       </AnimatePresence>
@@ -266,7 +258,7 @@ const AvatarWithGlow = ({
                 alt={avatar.alt}
                 width={avatar.size}
                 height={avatar.size}
-                className="rounded-full filter grayscale hover:grayscale-0 transition-all duration-300"
+                className="rounded-full filter  transition-all duration-300"
               />
             </div>
           </motion.div>

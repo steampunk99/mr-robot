@@ -1,6 +1,6 @@
 "use client"
 
-import React, { useRef } from 'react'
+import React, { useRef, useState, useEffect } from 'react'
 import { motion, useInView, useScroll, useTransform } from 'framer-motion'
 
 type ParagraphRevealProps = {
@@ -12,6 +12,71 @@ type ParagraphRevealProps = {
   staggerAmount?: number
 }
 
+// Add new hook to detect scroll direction
+function useScrollDirection() {
+  const [scrollDirection, setScrollDirection] = useState<'up' | 'down'>('down')
+  const [lastScrollY, setLastScrollY] = useState(0)
+
+  useEffect(() => {
+    const updateScrollDirection = () => {
+      const scrollY = window.pageYOffset
+      const direction = scrollY > lastScrollY ? 'down' : 'up'
+      if (direction !== scrollDirection && Math.abs(scrollY - lastScrollY) > 10) {
+        setScrollDirection(direction)
+      }
+      setLastScrollY(scrollY > 0 ? scrollY : 0)
+    }
+
+    window.addEventListener('scroll', updateScrollDirection)
+    return () => window.removeEventListener('scroll', updateScrollDirection)
+  }, [scrollDirection, lastScrollY])
+
+  return scrollDirection
+}
+
+// Update ContentFade to use scroll direction
+export function ContentFade({
+  children,
+  className = "",
+  direction = "up"
+}: {
+  children: React.ReactNode,
+  className?: string,
+  direction?: "up" | "down" | "left" | "right"
+}) {
+  const contentRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(contentRef, { amount: 0.6, once: false }) // Changed to false to allow re-animation
+  const scrollDirection = useScrollDirection()
+
+  const getInitialDirection = () => {
+    if (direction === "left") return { x: 70, y: 0 }
+    if (direction === "right") return { x: -60, y: 0 }
+    
+    // For up/down, reverse based on scroll direction
+    const baseY = direction === "up" ? 50 : -60
+    return { x: 0, y: scrollDirection === "up" ? -baseY : baseY }
+  }
+
+  return (
+    <motion.div
+      ref={contentRef}
+      className={className}
+      initial={{ opacity: 0, ...getInitialDirection() }}
+      animate={isInView 
+        ? { opacity: 1, x: 0, y: 0 }
+        : { opacity: 0, ...getInitialDirection() }
+      }
+      transition={{
+        duration: 0.8,
+        ease: [0.16, 1, 0.3, 1]
+      }}
+    >
+      {children}
+    </motion.div>
+  )
+}
+
+// Update ParagraphReveal to use scroll direction
 export default function ParagraphReveal({
   children,
   className = "",
@@ -21,7 +86,8 @@ export default function ParagraphReveal({
   staggerAmount = 0.2,
 }: ParagraphRevealProps) {
   const ref = useRef<HTMLDivElement>(null)
-  const isInView = useInView(ref, { once: true, amount: threshold })
+  const isInView = useInView(ref, { amount: threshold }) // Removed once: true
+  const scrollDirection = useScrollDirection()
   
   // Transform text when in view
   const containerVariants = {
@@ -38,7 +104,7 @@ export default function ParagraphReveal({
   // For line animation
   const lineVariants = {
     hidden: { 
-      y: "110%",
+      y: scrollDirection === 'up' ? "-110%" : "110%",
       opacity: 0
     },
     visible: { 
@@ -141,99 +207,10 @@ export function ParallaxText({
     <div ref={containerRef} className={`${className} overflow-hidden whitespace-nowrap`}>
       <motion.div
         style={{ x: xPos }}
-        className="text-[clamp(3rem,8vw,10rem)] font-medium tracking-tighter"
+        className="text-[clamp(2rem,8vw,8rem)] font-medium tracking-tighter"
       >
         {children}
       </motion.div>
     </div>
-  )
-}
-
-// For large section headlines with masked reveal
-export function MaskedText({
-  children,
-  className = ""
-}: {
-  children: React.ReactNode,
-  className?: string
-}) {
-  const textRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(textRef, { once: true, amount: 0.3 })
-  
-  const textVariants = {
-    hidden: {
-      y: "100%"
-    },
-    visible: {
-      y: "0%",
-      transition: {
-        duration: 1,
-        ease: [0.16, 1, 0.3, 1]
-      }
-    }
-  }
-  
-  return (
-    <div className={`${className} overflow-hidden relative`} ref={textRef}>
-      <motion.div
-        variants={textVariants}
-        initial="hidden"
-        animate={isInView ? "visible" : "hidden"}
-      >
-        {children}
-      </motion.div>
-      <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-black/40 pointer-events-none" 
-           style={{ mixBlendMode: 'overlay' }}/>
-    </div>
-  )
-}
-
-// For subtle fade-in of content sections
-export function ContentFade({
-  children,
-  className = "",
-  direction = "up"
-}: {
-  children: React.ReactNode,
-  className?: string,
-  direction?: "up" | "down" | "left" | "right"
-}) {
-  const contentRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(contentRef, { once: true, amount: 0.2 })
-  
-  const directionMap = {
-    up: { y: 20, x: 0 },
-    down: { y: -20, x: 0 },
-    left: { y: 0, x: 20 },
-    right: { y: 0, x: -20 }
-  }
-  
-  const fadeVariants = {
-    hidden: {
-      opacity: 0,
-      y: directionMap[direction].y,
-      x: directionMap[direction].x
-    },
-    visible: {
-      opacity: 1,
-      y: 0,
-      x: 0,
-      transition: {
-        duration: 0.8,
-        ease: [0.16, 1, 0.3, 1]
-      }
-    }
-  }
-  
-  return (
-    <motion.div
-      ref={contentRef}
-      className={className}
-      variants={fadeVariants}
-      initial="hidden"
-      animate={isInView ? "visible" : "hidden"}
-    >
-      {children}
-    </motion.div>
   )
 }

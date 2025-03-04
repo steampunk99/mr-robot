@@ -163,8 +163,10 @@ const AboutSection = () => {
                       }}
                       className="flex justify-between items-baseline"
                     >
-                      <span className="text-base text-neutral-300 font-light">{skill.name}</span>
-                      <span className="text-sm text-neutral-500 font-extralight">{skill.level}</span>
+                         <ContentFade direction="up" className="mb-4"> <span className="text-base text-neutral-300 font-light">{skill.name}</span></ContentFade>
+                         <ContentFade direction="up" className="mb-4"><span className="text-sm text-neutral-500 font-extralight">{skill.level}</span></ContentFade>
+                     
+                      
                     </motion.li>
                   ))}
                 </ul>

@@ -1,0 +1,90 @@
+{
+    "projects": [
+      {
+        "id": "1",
+        "title": "404",
+        "description": "404 but make it art",
+        "fullDescription": "Fractal patterns and abstract shapes come together in this experimental 3D workhis project use p5.js,React to create a dynamic and interactive experience that pushes the boundaries of digital art.",
+        "image": "/en/404.png",
+        "images": ["/en/404.png", "/en/tree-1.png", "/en/jellyfish.png"],
+        "tags": ["Three.js", "React", "WebGL"],
+        "category": "Development",
+        "year": "2024",
+        "liveUrl": "https://example.com/demo",
+        "githubUrl": "https://github.com/example/project",
+        "features": ["Real-time 3D rendering", "Custom material system", "Interactive controls"]
+      },
+      {
+        "id": "2",
+        "title": "Enroll UG",
+        "description": "A platform to find your dream school",
+        "fullDescription": "An award-winning digital experience exploring the concept of Ikigai through interactive storytelling. This project combines subtle animations, spatial audio, and responsive design to create a meditative journey for users.",
+        "image": "/en/home.png",
+        "images": ["/en/home.png", "/en/homedark.png", "/en/regdark.png"],
+        "tags": ["Express", "React", "MongoDB"],
+        "category": "Interactive",
+        "year": "2023",
+        "liveUrl": "https://example.com/ikigai",
+        "githubUrl": "https://github.com/example/ikigai",
+        "features": ["Parallax scrolling effects", "Custom WebGL shaders", "Responsive typography system"]
+      },
+      {
+        "id": "3",
+        "title": "Auth",
+        "description": "Login and Register pages with dynamic onboarding interactions",
+        "fullDescription": "Inspired from Dribbble",
+        "image": "/blue.png",
+        "images": ["/blue.png"],
+        "tags": ["Next.js", "Shopify", "Framer Motion"],
+        "category": "Interactive",
+        "year": "2023",
+        "liveUrl": "https://example.com/kintsugi",
+        "githubUrl": "https://github.com/example/kintsugi",
+        "features": ["Custom checkout experience", "Product visualization", "Micro-interactions"]
+      },
+      {
+        "id": "4",
+        "title": "Untitled",
+        "description": "A platform for freelancers to find work",
+        "fullDescription": "A minimalist analytics dashboard inspired by Zen gardens. This project reimagines complex In through the lens of simplicity and tranquility, using negative space and subtle animations to create an intuitive user experience.",
+        "image": "/reg2.jpg",
+        "images": ["/reg2.jpg"],
+        "tags": ["D3.js", "React", "Firebase"],
+        "category": "Interactive",
+        "year": "2023",
+        "liveUrl": "https://example.com/zengarden",
+        "githubUrl": "https://github.com/example/zengarden",
+        "features": ["Real-time data updates", "Customizable visualization modules", "Exportable reports"]
+      },
+      {
+        "id": "5",
+        "title": "Mono no Aware Photography",
+        "description": "Portfolio site for a contemporary photographer",
+        "fullDescription": "A portfolio website for a photographer exploring 'mono no aware'—the pathos of things. The site features a unique horizontal scrolling gallery with subtle parallax effects and dynamic image loading to create a seamless viewing experience.",
+        "image": "/reg1.png",
+        "images": ["/reg1.png"],
+        "tags": ["Canvas", "Locomotive Scroll", "Next.js"],
+        "category": "Design",
+        "year": "2022",
+        "liveUrl": "https://example.com/photography",
+        "githubUrl": "https://github.com/example/photography",
+        "features": ["Horizontal scrolling gallery", "Dynamic image loading", "Custom cursor interactions"]
+      },
+      {
+        "id": "6",
+        "title": "Wabi-Sabi Design System",
+        "description": "Component library embracing imperfection and asymmetry",
+        "fullDescription": "A comprehensive design system and component library inspired by wabi-sabi philosophy. This project embraces imperfection, asymmetry, and natural textures to create digital interfaces that feel more human and authentic.",
+        "image": "/overview.png",
+        "images": ["/overview.png"],
+        "tags": ["Storybook", "TypeScript", "Figma"],
+        "category": "Design",
+        "year": "2022",
+        "liveUrl": "https://example.com/wabisabi",
+        "githubUrl": "https://github.com/example/wabisabi",
+        "features": ["50+ customizable components", "Accessibility-first approach", "Comprehensive documentation"]
+      }
+    ]
+  }
+  
+  
