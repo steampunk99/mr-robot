@@ -16,6 +16,7 @@ import SteampunkRobotFull from "@/components/steampunk-robotfull"
 import ParagraphReveal, { ParallaxText, ContentFade } from "@/components/paragraph-reveal"
 import projects from "@/data/projects.json"
 import { ShimmerText } from "@/animations/animations"
+import { ContactSection } from "@/components/contact"
 
 
 export default function Home() {
@@ -122,15 +123,13 @@ export default function Home() {
         <div className="w-full h-full absolute top-0 left-0">
           <MinimalistBackground />
           
-          {/* Large Steampunk Robot SVG in background - Removed motion wrapper */}
+          {/* Update the robot container to enable proper mouse tracking */}
           <div className="absolute right-[5%] top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
             <SteampunkRobotFull 
               width={600} 
               height={600} 
-              section="home" 
+              section="home"
               className="filter drop-shadow-[0_0_8px_rgba(255,255,255,0.4)]"
-              // Disable internal motion animations to prevent conflicts
-              disableMotion={true}
             />
           </div>
         </div>
@@ -237,23 +236,9 @@ export default function Home() {
 
       {/* Contact Section */}
       <section id="contact" ref={contactSectionRef} className="py-20 border-t border-neutral-800">
-        <motion.div
-          initial={{ opacity: 0, y: 20 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.5 }}
-          viewport={{ once: true }}
-          className="space-y-6 text-center"
-        >
-          <div className="text-neutral-400 text-sm tracking-wider uppercase">Get in Touch</div>
-          <h2 className="text-2xl font-bold">Let's create something amazing together</h2>
-          <Link
-            href="/contact"
-            className="inline-flex items-center text-sm text-neutral-200 hover:text-neutral-100 transition-colors"
-          >
-            Contact Me
-            <ArrowUpRight className="ml-1 w-4 h-4" />
-          </Link>
-        </motion.div>
+        
+
+        <ContactSection/>
       </section>
     </main>
   )

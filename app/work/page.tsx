@@ -219,7 +219,7 @@ export default function ProjectsPage() {
           >
             <h2 className="text-2xl md:text-4xl lg:text-5xl font-light mb-6 md:mb-8">Have a project in mind?</h2>
             <p className="text-base md:text-lg text-neutral-400 mb-8 md:mb-12 max-w-2xl mx-auto">
-              I'm always open to discussing new projects and creative ideas. Let's create something meaningful together.
+              I'm always open to discussing new projects and creative ideas.
             </p>
 
             <motion.div whileHover={{ scale: 1.02 }} whileTap={{ scale: 0.98 }} className="inline-block">

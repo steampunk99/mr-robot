@@ -4,8 +4,15 @@ import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
 import SteampunkRobot from "./steampunk-robot"
 import { useSmoothScroll } from "@/context/smooth-scroll"
+import { usePathname } from "next/navigation"
 
 export default function InitialLoader() {
+  const pathname = usePathname()
+  const isWorkRoute = pathname.startsWith('/work')
+
+  // Don't show loader on work routes
+  if (isWorkRoute) return null
+
   const [progress, setProgress] = useState(0)
   const [phase, setPhase] = useState<"loading" | "exit" | "entrance" | "complete">("loading")
   const [exit, setExit] = useState(false)

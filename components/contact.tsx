@@ -3,11 +3,11 @@
 import type React from "react"
 
 import { useRef, useState } from "react"
-import { motion, useScroll, useTransform } from "framer-motion"
 import Link from "next/link"
 import { ArrowUpRight } from "lucide-react"
+import { motion, useScroll, useTransform } from "framer-motion"
 
-export default function ContactPage() {
+export function ContactSection() {
   const containerRef = useRef<HTMLDivElement>(null)
   const [formState, setFormState] = useState({
     name: "",
@@ -33,7 +33,7 @@ export default function ContactPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault()
     console.log(formState)
-    // Form submission logic :todo
+    // Form submission logic would go here
   }
 
   return (
@@ -42,13 +42,11 @@ export default function ContactPage() {
         <motion.h2
           className="text-7xl md:text-7xl font-black tracking-tighter mb-24"
           initial={{ opacity: 0, y: 50 }}
-          whileInView={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.8 }}
-          viewport={{ once: true, margin: "-100px" }}
+          whileInView={{ opacity: 1, y: 0.3 }}
+          transition={{type:"spring", duration: 1.8 }}
+          viewport={{ once: true, margin: "-200px" }}
         >
-          Get in
-          <br />
-          Touch
+          Get in touch
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
@@ -171,10 +169,7 @@ export default function ContactPage() {
                 <ArrowUpRight className="w-4 h-4" />
               </Link>
             </motion.div>
-      
-
-          
-          
+       
             </form>
           </div>
         </div>

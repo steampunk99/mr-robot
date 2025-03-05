@@ -104,7 +104,7 @@ export default function AnimatedTextReveal({
         ))}
       </motion.div>
       
-      {/* Subtle horizontal line that animates after text appears - Japanese aesthetic */}
+      {/* After-glow line animation */}
       <motion.div 
         className="absolute -bottom-1 left-0 h-px bg-white/40"
         style={{ originX: 0 }}

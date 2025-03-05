@@ -84,7 +84,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
 
   return (
     <AnimatePresence mode="wait">
-      <motion.div key={key} className="relative">
+      <motion.div key={key} className="relative w-full h-full">
         {/* Apply the same transition to all routes including home */}
         <>
           {/* Exit animations - staggered blocks (left to right) */}
@@ -98,7 +98,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
           <motion.div {...createTransitionProps("bottom", false, 0.6)} />
 
           <motion.div
-            className="relative z-10"
+            className="relative z-10 w-full h-full" // Added w-full h-full here too
             initial={{ opacity: 0 }}
             animate={{
               opacity: 1,

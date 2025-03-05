@@ -20,7 +20,7 @@ module.exports = {
       fontFamily: {
         sans: ["var(--font-outfit)", "system-ui", "sans-serif"],
         display: ["var(--font-unbounded)", "system-ui", "sans-serif"],
-        unique: ["var(--font-unique)", "cursive"], // Add this line
+        unique: ["var(--font-unique)", "cursive"],
       },
       colors: {
         border: "hsl(var(--border))",

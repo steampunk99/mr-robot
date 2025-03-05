@@ -4,8 +4,7 @@ import { motion, AnimatePresence } from "framer-motion"
 import Image from "next/image"
 import Link from "next/link"
 import { useEffect, useState } from "react"
-import { ParallaxText,MaskedText } from "./paragraph-reveal"
-import SteampunkRobot from "./steampunk-robot"
+
 import SteampunkRobotFull from "./steampunk-robotfull"
 
 const SocialAvatars = () => {
@@ -62,7 +61,7 @@ const SocialAvatars = () => {
     return normalizedDistance
   }
 
-  // Avatars with Japanese-inspired minimalist design
+  // Avatars 
   const avatars = [
     {
       id: "personal",
@@ -71,23 +70,7 @@ const SocialAvatars = () => {
       href: "https://twitter.com/bonnie_lukwiya",
       size: isMobile ? 64 : 72,
       expandable: true
-    },
-    {
-      id: "github",
-      src: "/github-avatar.svg",
-      alt: "GitHub",
-      href: "https://github.com/steampunk99",
-      size: isMobile ? 34 : 40,
-      expandable: false
-    },
-    {
-      id: "instagram",
-      src: "/reddit.png",
-      alt: "Reddit",
-      href: "https://www.reddit.com/user/PureHeroine______/",
-      size: isMobile ? 25 : 35,
-      expandable: false
-    },
+    }
   ]
 
   // Handle tapping on avatar - prevent event propagation to avoid immediate closing
@@ -131,7 +114,7 @@ const SocialAvatars = () => {
               exit={{ scale: 0.7, opacity: 0 }}
               transition={{ type: "spring", damping: 5 }}
               className="relative rounded-full overflow-hidden"
-              style={{ width: '180px', height: '180px' }}
+              style={{ width: '220px', height: '220px' }}
               onClick={(e) => e.stopPropagation()}
             >
               <SteampunkRobotFull height={400} width={260} section="home" className="relative z-10" />
@@ -200,7 +183,7 @@ const AvatarWithGlow = ({
             className="absolute inset-0 rounded-full transition-all duration-200"
             style={{ 
               boxShadow: `0 0 ${10 + glowIntensity * 15}px ${glowIntensity * 10}px rgba(255, 255, 255, ${0.1 + glowIntensity * 0.3})`,
-              transform: `scale(${1 + glowIntensity * 0.1})`,
+              transform: `scale(${1 + glowIntensity * 0.3})`,
               opacity: 0.2 + glowIntensity * 0.8
             }}
           />

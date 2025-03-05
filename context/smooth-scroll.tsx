@@ -23,10 +23,10 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
       orientation: 'vertical',
       gestureOrientation: 'vertical',
       smoothWheel: true,
-      smoothTouch: true,
+      
       touchMultiplier: 2, 
       wheelMultiplier: 1.2, 
-      normalizeWheel: true,
+      
       infinite: false,
     })
 
