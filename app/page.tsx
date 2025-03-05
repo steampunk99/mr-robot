@@ -10,12 +10,12 @@ import Image from "next/image"
 import { ArrowUpRight, ChevronUp } from "lucide-react"
 import MinimalistBackground from "@/components/minimalist-background"
 import SocialAvatars from "@/components/social-avatars"
-import { fadeInUp } from "@/animations/fade-in-up"
 import ScrollIndicator from "@/components/scroll-indicator"
 import AnimatedTextReveal from "@/components/animated-text-reveal"
 import SteampunkRobotFull from "@/components/steampunk-robotfull"
 import ParagraphReveal, { ParallaxText, ContentFade } from "@/components/paragraph-reveal"
 import projects from "@/data/projects.json"
+import { ShimmerText } from "@/animations/animations"
 
 
 export default function Home() {
@@ -89,18 +89,7 @@ export default function Home() {
     { id: "contact", name: "Contact" }
   ]
 
-  // Fade-in animation variants with faster timing
-  const fadeInUp = {
-    hidden: { opacity: 0, y: 20 },
-    visible: {
-      opacity: 1,
-      y: 0,
-      transition: {
-        duration: 0.5,
-        ease: [0.22, 1, 0.36, 1],
-      },
-    },
-  }
+
 
   return (
     <main className="w-full min-h-screen bg-black text-white">

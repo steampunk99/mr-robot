@@ -8,9 +8,9 @@ import SteampunkRobot from "./steampunk-robot"
 
 // Define navigation items as a constant outside the component
 const NAV_ITEMS = [
-  { href: "/", label: "Home" },
-  { href: "/work", label: "Work" },
-  { href: "/about", label: "About" },
+  { href: "/", label: "Introduction" },
+  { href: "/work", label: "Projects" },
+  { href: "/about", label: "Reflection" },
 ]
 
 // NavItem component extracted but kept in the same file
