@@ -14,8 +14,8 @@ interface SteampunkRobotProps {
 }
 
 const SteampunkRobot: React.FC<SteampunkRobotProps> = ({
-  width = 200,
-  height = 200,
+  width = 300,
+  height = 300,
   className = "",
   isLogo = false,
   color = "",
@@ -124,8 +124,8 @@ const SteampunkRobot: React.FC<SteampunkRobotProps> = ({
     <motion.svg
       ref={svgRef}
       xmlns="http://www.w3.org/2000/svg"
-      width={isLogo ? 48 : width}
-      height={isLogo ? 48 : height}
+      width={isLogo ? 56 : width}
+      height={isLogo ? 56 : height}
       viewBox="0 0 200 200"
       className={className}
       initial={{ opacity: 0 }}

@@ -90,9 +90,9 @@ export default function ProjectsPage() {
   }
 
   return (
-    <div ref={containerRef} className="bg-black text-white min-h-screen">
+    <div ref={containerRef} className="bg-black text-white min-h-screen py-16">
       {/* Noise texture overlay */}
-      <div className="fixed inset-0 z-10 pointer-events-none opacity-[0.03] bg-[url('/noise.png')] bg-repeat"></div>
+      <div className="fixed inset-0 z-10 pointer-events-none opacity-[0.03] bg-[url('/dark.png')] bg-repeat"></div>
 
       {/* Custom cursor */}
       {!isMobile && (

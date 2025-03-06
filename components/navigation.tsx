@@ -50,7 +50,7 @@ export function Navigation() {
         {/* Logo/Home link - standard link with no special handling */}
         <Link href="/" className="flex items-center space-x-2 group" aria-label="Home">
           <div className="relative">
-            <SteampunkRobot isLogo={true} section="home" className="relative z-10" />
+            <SteampunkRobot isLogo={true} color="brown" section="home" className="relative z-10 h-20 w-20" />
             {pathname !== "/" && (
               <motion.div
                 className="absolute inset-0 bg-white/10 rounded-full -z-0 opacity-0"
