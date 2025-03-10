@@ -52,7 +52,7 @@ export function PageTransition({ children }: { children: ReactNode }) {
   // Simplified transition block properties for better performance
   const createTransitionProps = (position: "top" | "middle" | "bottom", isExit: boolean, delay: number) => {
     const positionClasses = {
-      top: "top-[72px] bottom-2/3",
+      top: "top-0 bottom-2/3",
       middle: "top-1/3 bottom-1/3",
       bottom: "top-2/3 bottom-0",
     }
@@ -94,8 +94,8 @@ export function PageTransition({ children }: { children: ReactNode }) {
 
           {/* Entrance animations - staggered blocks (right to left) */}
           <motion.div {...createTransitionProps("top", false, 0.2)} />
-          <motion.div {...createTransitionProps("middle", false, 0.4)} />
-          <motion.div {...createTransitionProps("bottom", false, 0.6)} />
+          <motion.div {...createTransitionProps("middle", false, 0.3)} />
+          <motion.div {...createTransitionProps("bottom", false, 0.5)} />
 
           <motion.div
             className="relative z-10 w-full h-full" // Added w-full h-full here too

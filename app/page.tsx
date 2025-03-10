@@ -8,14 +8,13 @@ import AboutSection from "@/components/about-section"
 import Link from "next/link"
 import Image from "next/image"
 import { ArrowUpRight, ChevronUp } from "lucide-react"
-import MinimalistBackground from "@/components/minimalist-background"
 import SocialAvatars from "@/components/social-avatars"
 import ScrollIndicator from "@/components/scroll-indicator"
-import AnimatedTextReveal from "@/components/animated-text-reveal"
 import SteampunkRobotFull from "@/components/steampunk-robotfull"
 import ParagraphReveal, { ParallaxText, ContentFade } from "@/components/paragraph-reveal"
 import projects from "@/data/projects.json"
-import { ShimmerText } from "@/animations/animations"
+import AnimatedTextReveal from "@/components/animated-text-reveal"
+import ProjectCard from "@/components/project-card"
 import { ContactSection } from "@/components/contact"
 
 
@@ -93,7 +92,8 @@ export default function Home() {
 
 
   return (
-    <main className="w-full min-h-screen bg-black text-white">
+    <main className="w-full min-h-screen relative bg-black text-white">
+     
       {/* Scroll indicator */}
       <ScrollIndicator sections={sections} />
       
@@ -117,11 +117,30 @@ export default function Home() {
       <section 
         id="hero" 
         ref={heroSectionRef} 
-        className="relative min-h-screen flex items-center justify-center overflow-hidden"
-      >
+        className="relative min-h-screen flex items-center justify-center overflow-hidden">
+      {/* Background video */}
+      <video
+        className="absolute inset-0 object-cover opacity-10 pointer-events-none"
+        autoPlay
+        loop
+        muted
+        playsInline
+        src="/green.mp4"
+      />
         {/* Background wrapper */}
+             {/* Background elements */}
+             <div className="absolute inset-0">
+          {/* Noise texture */}
+          <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]"></div>
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff09_0,transparent_100%)]"></div>
+          
+          {/* Grid lines */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff09_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+        </div>
         <div className="w-full h-full absolute top-0 left-0">
-          <MinimalistBackground />
+          
           
           {/* Update the robot container to enable proper mouse tracking */}
           <div className="absolute right-[5%] top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
@@ -228,15 +247,26 @@ export default function Home() {
         </motion.div>
 
         <div className="space-y-32">
-          {projects.projects.slice(0,4).map((project, index) => (
+          {projects.projects.slice(0,3).map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" ref={contactSectionRef} className="py-20 border-t border-neutral-800">
-        
+      <section id="contact" ref={contactSectionRef} className="py-20 border-t relative border-neutral-800">
+         {/* Background wrapper */}
+             {/* Background elements */}
+             <div className="absolute inset-0">
+          {/* Noise texture */}
+          <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]"></div>
+          
+          {/* Gradient overlay */}
+          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff09_0,transparent_100%)]"></div>
+          
+          {/* Grid lines */}
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff09_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+        </div>
 
         <ContactSection/>
       </section>
@@ -244,56 +274,4 @@ export default function Home() {
   )
 }
 
-function ProjectCard({ project, index }) {
-  // Alternate layout direction for even/odd projects
-  const isEven = index % 2 === 0
 
-  return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
-      transition={{
-        duration: 0.5,
-        delay: index * 0.1
-      }}
-      viewport={{ once: true }}
-      className="group"
-    >
-      <div className={`lg:grid lg:grid-cols-2 lg:gap-10 items-center ${isEven ? '' : 'lg:flex-row-reverse'}`}>
-        <div className="aspect-video overflow-hidden bg-neutral-900 rounded-none mb-8 lg:mb-0">
-          <Image
-            src={project.image}
-            alt={project.title}
-            width={800}
-            height={450}
-            className="object-cover w-full h-full transition-transform duration-500 group-hover:scale-105"
-            priority={index < 2}
-          />
-        </div>
-        <div className="space-y-4">
-          <Link href={`/work/${project.id}`} className="block">
-            <div className="flex items-start justify-between gap-4">
-              <ParagraphReveal className="text-xl md:text-2xl font-bold group-hover:text-neutral-200 transition-colors">
-                {project.title}
-              </ParagraphReveal>
-              <ArrowUpRight className="w-5 h-5 text-neutral-200 transition-transform group-hover:-translate-y-0.5 group-hover:translate-x-0.5" />
-            </div>
-            <ContentFade direction="up">
-            <p className="text-neutral-500 my-4 text-base md:text-lg">{project.description}</p>
-            <div className="flex flex-wrap gap-2">
-              {project.tags.map((tag) => (
-                <span 
-                  key={tag} 
-                  className="text-xs text-neutral-500 px-2 py-1 rounded-none border border-neutral-800 group-hover:border-neutral-700 transition-colors"
-                >
-                  {tag}
-                </span>
-              ))}
-            </div>
-            </ContentFade>
-          </Link>
-        </div>
-      </div>
-    </motion.div>
-  )
-}

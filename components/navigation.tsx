@@ -10,7 +10,7 @@ import SteampunkRobot from "./steampunk-robot"
 const NAV_ITEMS = [
   { href: "/", label: "Introduction" },
   { href: "/work", label: "Projects" },
-  { href: "/about", label: "Reflection" },
+  { href: "/about", label: "About" },
 ]
 
 // NavItem component extracted but kept in the same file

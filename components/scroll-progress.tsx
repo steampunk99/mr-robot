@@ -31,7 +31,7 @@ export function ScrollProgress() {
   
   return (
     <motion.div 
-      className="fixed top-0 left-0 right-0 h-[2px] bg-white/10 z-50 origin-left"
+      className="fixed top-0 left-0 right-0 h-[2px] bg-white/10 z-[150] origin-left"
       style={{ 
         scaleX: smoothProgress,
         opacity: scrollProgress > 0 ? 1 : 0

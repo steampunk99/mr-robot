@@ -43,13 +43,15 @@ export default function RootLayout({
 }) {
   return (
     <html lang="en" className={`${spaceGrotesk.variable} ${cinzel.variable} ${majorMono.variable}`}>
-      <body className={`${spaceGrotesk.className} font-sans bg-black text-white`}>
+      <body className={`${spaceGrotesk.className} font-sans bg-black text-white`}> 
         <div className="fixed inset-0 bg-black"></div>
         <SmoothScrollProvider>
           <InitialLoader />
+        
           <ScrollProgress />
           <Navigation />
-          <PageTransition>{children}</PageTransition>
+            <PageTransition>{children}</PageTransition>
+         
         </SmoothScrollProvider>
       </body>
     </html>

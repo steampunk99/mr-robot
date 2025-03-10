@@ -97,14 +97,13 @@ export default function ProjectsPage() {
       onMouseMove={handleMouseMove}
     >
       {/* Background elements */}
-      <motion.div
-        className="absolute inset-0 opacity-10 pointer-events-none"
-        style={{
-          backgroundImage: "url('https://images.pexels.com/photos/30135207/pexels-photo-30135207/free-photo-of-urban-streetview-of-classic-new-york-architecture.jpeg?auto=compress&cs=tinysrgb&w=600&lazy=load')",
-          backgroundSize: "cover",
-          x: smoothBackgroundX,
-          y: smoothBackgroundY,
-        }}
+      <video
+        className="absolute inset-0 object-cover opacity-10 pointer-events-none"
+        autoPlay
+        loop
+        muted
+        playsInline
+        src="/bg1.mp4"
       />
 
       {/* Decorative grid lines */}
