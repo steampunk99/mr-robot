@@ -1,219 +1,494 @@
 "use client"
 
 import { useEffect, useState, useRef } from "react"
-import { useParams, useRouter } from "next/navigation"
-import { motion, useScroll, useTransform } from "framer-motion"
-import Image from "next/image"
+import { notFound, useRouter } from "next/navigation"
 import Link from "next/link"
-import { ArrowLeft, ArrowRight, ExternalLink, Github } from "lucide-react"
-import projectsData from "@/data/projects.json"
+import Image from "next/image"
+import { ChevronLeft, ExternalLink, Github, ArrowRight, ArrowLeft } from "lucide-react"
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion"
+import projects from "@/data/projects.json"
+import ProjectCursor from "@/components/project-cursor"
 
-export default function ProjectPage() {
-  const { id } = useParams()
+export default function ProjectPage({ params }: { params: { id: string } }) {
   const router = useRouter()
-  const [project, setProject] = useState(null)
-  const [loading, setLoading] = useState(true)
-  const [nextProject, setNextProject] = useState(null)
+  const project = projects.projects.find((p) => p.id === params.id)
+  const [cursorMode, setCursorMode] = useState<"default" | "view" | "drag" | "link">("default")
+  const [cursorText, setCursorText] = useState("")
+  const [activeImage, setActiveImage] = useState(0)
+  const containerRef = useRef<HTMLDivElement>(null)
+  const galleryRef = useRef<HTMLDivElement>(null)
 
-  const containerRef = useRef(null)
+  // Handle cursor interactions
+  const handleLinkEnter = () => {
+    setCursorMode("link")
+    setCursorText("")
+  }
+
+  const handleLinkLeave = () => {
+    setCursorMode("default")
+    setCursorText("")
+  }
+
+  const handleImageEnter = () => {
+    setCursorMode("view")
+    setCursorText("View")
+  }
+
+  const handleImageLeave = () => {
+    setCursorMode("default")
+    setCursorText("")
+  }
+
+  const handleDragEnter = () => {
+    setCursorMode("drag")
+    setCursorText("Drag")
+  }
+
+  const handleDragLeave = () => {
+    setCursorMode("default")
+    setCursorText("")
+  }
+
+  // Scroll animations
   const { scrollYProgress } = useScroll({
     target: containerRef,
     offset: ["start start", "end end"],
   })
 
   const headerOpacity = useTransform(scrollYProgress, [0, 0.1], [1, 0])
-  const headerY = useTransform(scrollYProgress, [0, 0.1], [0, -100])
+  const headerY = useTransform(scrollYProgress, [0, 0.1], [0, -50])
+  const contentOpacity = useTransform(scrollYProgress, [0.1, 0.2], [0, 1])
+  const contentY = useTransform(scrollYProgress, [0.1, 0.2], [50, 0])
 
+  // Smooth animations
+  const smoothHeaderY = useSpring(headerY, { damping: 20, stiffness: 100 })
+  const smoothContentY = useSpring(contentY, { damping: 20, stiffness: 100 })
+
+  // Handle keyboard navigation
   useEffect(() => {
-    // Find the current project
-    const projectData = projectsData.projects.find((p) => p.id === id)
-
-    if (projectData) {
-      setProject(projectData)
-
-      // Find the next project (or loop back to first)
-      const currentIndex = projectsData.projects.findIndex((p) => p.id === id)
-      const nextIndex = (currentIndex + 1) % projectsData.projects.length
-      setNextProject(projectsData.projects[nextIndex])
-    } else {
-      // Project not found, redirect to work page
-      router.push("/work")
+    const handleKeyDown = (e: KeyboardEvent) => {
+      if (e.key === "ArrowLeft") {
+        if (Number.parseInt(project?.id || "0") > 1) {
+          router.push(`/projects/${Number.parseInt(project?.id || "0") - 1}`)
+        }
+      } else if (e.key === "ArrowRight") {
+        if (Number.parseInt(project?.id || "0") < projects.projects.length) {
+          router.push(`/projects/${Number.parseInt(project?.id || "0") + 1}`)
+        }
+      } else if (e.key === "Escape") {
+        router.push("/about")
+      }
     }
 
-    setLoading(false)
-  }, [id, router])
+    window.addEventListener("keydown", handleKeyDown)
+    return () => window.removeEventListener("keydown", handleKeyDown)
+  }, [project?.id, router])
 
-  if (loading) {
-    return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center">
-        <div className="w-6 h-6 border-2 border-white border-t-transparent rounded-full animate-spin"></div>
-      </div>
-    )
+  if (!project) {
+    notFound()
   }
 
-  if (!project) return null
-
   return (
-    <div ref={containerRef} className="bg-black text-white min-h-screen">
-   
+    <main ref={containerRef} className="bg-black text-white min-h-screen overflow-x-hidden">
+      <ProjectCursor mode={cursorMode} text={cursorText} />
 
-      {/* Project details */}
-      <section className="py-24 md:py-32">
-        <div className="container mx-auto px-4">
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-12 md:gap-24">
-            <div className="md:col-span-2">
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <h2 className="text-3xl font-light mb-8">Overview</h2>
-                <div className="text-neutral-300 space-y-6">
-                  <p className="text-lg">{project.fullDescription}</p>
-                </div>
-              </motion.div>
-            </div>
+      {/* Hero section */}
+      <div className="relative h-screen w-full overflow-hidden">
+        <motion.div
+          className="absolute inset-0 z-0"
+          initial={{ scale: 1.1 }}
+          animate={{ scale: 1 }}
+          transition={{ duration: 1.5, ease: [0.16, 1, 0.3, 1] }}
+        >
+          <Image
+            src={project.images[0] || "/placeholder.svg"}
+            alt={project.title}
+            fill
+            className="object-cover "
+            priority
+            quality={90}
+          />
+          <div className="absolute inset-0 bg-gradient-to-r from-black via-black/80 to-transparent" />
+        </motion.div>
 
-            <div>
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                className="space-y-8"
-              >
-                <div>
-                  <h3 className="text-sm uppercase tracking-wider text-neutral-500 mb-3">Year</h3>
-                  <p>{project.year}</p>
-                </div>
-
-                <div>
-                  <h3 className="text-sm uppercase tracking-wider text-neutral-500 mb-3">Category</h3>
-                  <p>{project.category}</p>
-                </div>
-
-                <div>
-                  <h3 className="text-sm uppercase tracking-wider text-neutral-500 mb-3">Key Features</h3>
-                  <ul className="space-y-2">
-                    {project.features.map((feature, index) => (
-                      <li key={index} className="text-neutral-300">
-                        {feature}
-                      </li>
-                    ))}
-                  </ul>
-                </div>
-
-                <div className="flex flex-col space-y-4 pt-4">
-                  {project.liveUrl && (
-                    <a
-                      href={project.liveUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-sm hover:text-neutral-400 transition-colors"
-                    >
-                      <ExternalLink className="w-4 h-4 mr-2" />
-                      View Live Site
-                    </a>
-                  )}
-
-                  {project.githubUrl && (
-                    <a
-                      href={project.githubUrl}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                      className="inline-flex items-center text-sm hover:text-neutral-400 transition-colors"
-                    >
-                      <Github className="w-4 h-4 mr-2" />
-                      View Source Code
-                    </a>
-                  )}
-                </div>
-              </motion.div>
-            </div>
-          </div>
-        </div>
-      </section>
-
-      {/* Project images */}
-      <section className="py-24 md:py-32 bg-neutral-950">
-        <div className="container mx-auto px-4">
-          <motion.h2
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-            className="text-3xl font-light mb-16 md:mb-24"
+        {/* Back button */}
+        <motion.div
+          className="absolute top-24 left-10 z-10"
+          initial={{ opacity: 0, x: -20 }}
+          animate={{ opacity: 1, x: 0 }}
+          transition={{ duration: 0.8, delay: 0.2 }}
+        >
+          <Link
+            href="/work"
+            className="flex items-center gap-2 text-white/80 hover:text-white transition-colors"
+            onMouseEnter={handleLinkEnter}
+            onMouseLeave={handleLinkLeave}
           >
-            Project Gallery
-          </motion.h2>
+            <ChevronLeft size={20} />
+            <span className="text-sm tracking-wider uppercase">Back to projects</span>
+          </Link>
+        </motion.div>
 
-          <div className="grid grid-cols-1 gap-12 md:gap-24">
-            {project.images.map((image, index) => (
-              <motion.div
-                key={index}
-                initial={{ opacity: 0, y: 40 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                viewport={{ once: true, margin: "-100px" }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              >
-                <div className="relative aspect-video overflow-hidden">
-                  <Image
-                    src={image || "/placeholder.svg"}
-                    alt={`${project.title} - Image ${index + 1}`}
-                    fill
-                    className="object-cover"
-                  />
-                </div>
-              </motion.div>
-            ))}
-          </div>
-        </div>
-      </section>
-
-      {/* Next project */}
-      {nextProject && (
-        <section className="py-24 md:py-32 relative overflow-hidden">
-          <div className="container mx-auto px-4">
+        {/* Project title */}
+        <motion.div
+          className="absolute bottom-0 left-0 w-full p-10 md:p-20"
+          style={{ opacity: headerOpacity, y: smoothHeaderY }}
+        >
+          <div className="max-w-5xl mx-auto">
             <motion.div
+              className="flex items-center gap-3 mb-4"
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.3 }}
+            >
+              <div className="w-10 h-[1px] bg-white/50" />
+              <span className="text-xs uppercase tracking-widest text-white/70">
+                {project.category} — {project.year}
+              </span>
+            </motion.div>
+
+            <motion.h1
+              className="text-5xl md:text-8xl font-serif font-light tracking-tight leading-tight"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.4 }}
+            >
+              {project.title}
+            </motion.h1>
+
+            <motion.p
+              className="text-lg md:text-xl text-white/70 mt-6 max-w-2xl"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.5 }}
+            >
+              {project.description}
+            </motion.p>
+
+            <motion.div
+              className="mt-10 flex gap-4"
+              initial={{ opacity: 0, y: 30 }}
+              animate={{ opacity: 1, y: 0 }}
+              transition={{ duration: 0.8, delay: 0.6 }}
+            >
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 px-5 py-3 border border-white/20 rounded-full text-sm hover:bg-white hover:text-black transition-all duration-300"
+                onMouseEnter={handleLinkEnter}
+                onMouseLeave={handleLinkLeave}
+              >
+                <ExternalLink size={16} className="group-hover:scale-110 transition-transform duration-300" />
+                <span>Live Preview</span>
+              </a>
+
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="group flex items-center gap-2 px-5 py-3 border border-white/20 rounded-full text-sm hover:bg-white/5 transition-all duration-300"
+                onMouseEnter={handleLinkEnter}
+                onMouseLeave={handleLinkLeave}
+              >
+                <Github size={16} />
+                <span>Source Code</span>
+              </a>
+            </motion.div>
+          </div>
+        </motion.div>
+
+     
+      </div>
+
+      {/* Content section */}
+      <motion.div
+        className="max-w-7xl mx-auto px-6 md:px-10 py-20 md:py-32"
+        style={{ opacity: contentOpacity, y: smoothContentY }}
+      >
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-16">
+          {/* Left column - Main content */}
+          <div className="md:col-span-2">
+            <motion.h2
+              className="text-3xl md:text-4xl font-serif mb-10 relative inline-block"
               initial={{ opacity: 0 }}
               whileInView={{ opacity: 1 }}
               viewport={{ once: true }}
-              transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1] }}
-              className="text-center mb-12"
+              transition={{ duration: 0.8 }}
             >
-              <span className="text-sm uppercase tracking-widest text-neutral-500">Next Project</span>
-            </motion.div>
-
-            <Link href={`/work/${nextProject.id}`}>
+              Overview
               <motion.div
-                initial={{ opacity: 0, y: 40 }}
+                className="absolute -bottom-2 left-0 h-[1px] bg-white/30"
+                initial={{ width: 0 }}
+                whileInView={{ width: "100%" }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8, delay: 0.2 }}
+              />
+            </motion.h2>
+
+            <motion.p
+              className="text-xl text-white/70 mb-10 leading-relaxed"
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              {project.fullDescription}
+            </motion.p>
+
+            {/* Image gallery */}
+            <div className="mt-20">
+              <motion.h2
+                className="text-3xl md:text-4xl font-serif mb-10 relative inline-block"
+                initial={{ opacity: 0 }}
+                whileInView={{ opacity: 1 }}
+                viewport={{ once: true }}
+                transition={{ duration: 0.8 }}
+              >
+                Gallery
+                <motion.div
+                  className="absolute -bottom-2 left-0 h-[1px] bg-white/30"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "100%" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
+              </motion.h2>
+
+              {/* Featured image */}
+              <motion.div
+                className="relative aspect-video mb-10 overflow-hidden"
+                initial={{ opacity: 0, y: 20 }}
                 whileInView={{ opacity: 1, y: 0 }}
                 viewport={{ once: true }}
-                transition={{ duration: 0.8, ease: [0.22, 1, 0.36, 1], delay: 0.2 }}
-                className="relative group"
+                transition={{ duration: 0.8 }}
+                onMouseEnter={handleImageEnter}
+                onMouseLeave={handleImageLeave}
               >
-                <div className="relative aspect-[21/9] overflow-hidden">
-                  <div className="absolute inset-0 bg-black/60 group-hover:bg-black/40 transition-colors duration-500"></div>
-                 
+                <AnimatePresence mode="wait">
+                  <motion.div
+                    key={activeImage}
+                    className="relative h-full w-full"
+                    initial={{ opacity: 0, scale: 1.05 }}
+                    animate={{ opacity: 1, scale: 1 }}
+                    exit={{ opacity: 0 }}
+                    transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                  >
+                    <Image
+                      src={project.images[activeImage] || "/placeholder.svg"}
+                      alt={`${project.title} - Featured Image`}
+                      fill
+                      className="object-cover"
+                      priority
+                      quality={90}
+                    />
+                  </motion.div>
+                </AnimatePresence>
 
-                  <div className="absolute inset-0 flex items-center justify-center">
-                    <div className="text-center">
-                      <h3 className="text-3xl md:text-5xl font-light mb-4">{nextProject.title}</h3>
-                      <p className="text-neutral-300 max-w-xl mx-auto mb-6">{nextProject.description}</p>
-                      <span className="inline-flex items-center text-sm border border-white/30 px-4 py-2 group-hover:bg-white group-hover:text-black transition-colors duration-300">
-                        <span className="mr-2">View Project</span>
-                        <ArrowRight className="w-4 h-4" />
-                      </span>
-                    </div>
-                  </div>
+                {/* Image navigation */}
+                <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3">
+                  {project.images.map((_, i) => (
+                    <button
+                      key={i}
+                      onClick={() => setActiveImage(i)}
+                      className={`size-2 rounded-full transition-all duration-300 ${
+                        i === activeImage ? "bg-white" : "bg-white/30"
+                      }`}
+                    />
+                  ))}
                 </div>
               </motion.div>
-            </Link>
+
+              {/* Thumbnail gallery */}
+              <div
+                ref={galleryRef}
+                className="grid grid-cols-2 md:grid-cols-3 gap-4"
+                onMouseEnter={handleDragEnter}
+                onMouseLeave={handleDragLeave}
+              >
+                {project.images.map((image, index) => (
+                  <motion.div
+                    key={index}
+                    className="relative aspect-[4/3] rounded-sm overflow-hidden cursor-pointer"
+                    initial={{ opacity: 0, y: 20 }}
+                    whileInView={{ opacity: 1, y: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.8, delay: index * 0.1 }}
+                    whileHover={{ scale: 1.03 }}
+                    onClick={() => setActiveImage(index)}
+                  >
+                    <Image
+                      src={image || "/placeholder.svg"}
+                      alt={`${project.title} - Image ${index + 1}`}
+                      fill
+                      className="object-cover"
+                    />
+                    <div
+                      className={`absolute inset-0 bg-black/30 transition-opacity duration-300 ${activeImage === index ? "opacity-0" : "opacity-100"}`}
+                    />
+                  </motion.div>
+                ))}
+              </div>
+            </div>
           </div>
-        </section>
-      )}
-    </div>
+
+          {/* Right column - Project details */}
+          <div className="space-y-16">
+            {/* Tags */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h3 className="text-sm uppercase tracking-widest text-white/70 mb-6 relative inline-block">
+                Technologies
+                <motion.div
+                  className="absolute -bottom-2 left-0 h-[1px] bg-white/30"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "100%" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
+              </h3>
+              <div className="flex flex-wrap gap-3">
+                {project.tags.map((tag, i) => (
+                  <motion.span
+                    key={i}
+                    className="text-xs bg-white/5 px-4 py-2 rounded-full text-white/70"
+                    initial={{ opacity: 0, scale: 0.9 }}
+                    whileInView={{ opacity: 1, scale: 1 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: i * 0.1 }}
+                    whileHover={{ backgroundColor: "rgba(255, 255, 255, 0.1)" }}
+                  >
+                    {tag}
+                  </motion.span>
+                ))}
+              </div>
+            </motion.div>
+
+            {/* Features */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h3 className="text-sm uppercase tracking-widest text-white/70 mb-6 relative inline-block">
+                Features
+                <motion.div
+                  className="absolute -bottom-2 left-0 h-[1px] bg-white/30"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "100%" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
+              </h3>
+              <ul className="space-y-4">
+                {project.features.map((feature, i) => (
+                  <motion.li
+                    key={i}
+                    className="flex items-start gap-3 text-white/60"
+                    initial={{ opacity: 0, x: -10 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true }}
+                    transition={{ duration: 0.5, delay: 0.2 + i * 0.1 }}
+                  >
+                    <div className="size-1.5 rounded-full bg-white/30 mt-2" />
+                    <span>{feature}</span>
+                  </motion.li>
+                ))}
+              </ul>
+            </motion.div>
+
+            {/* Project info */}
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              whileInView={{ opacity: 1, y: 0 }}
+              viewport={{ once: true }}
+              transition={{ duration: 0.8 }}
+            >
+              <h3 className="text-sm uppercase tracking-widest text-white/70 mb-6 relative inline-block">
+                Project Info
+                <motion.div
+                  className="absolute -bottom-2 left-0 h-[1px] bg-white/30"
+                  initial={{ width: 0 }}
+                  whileInView={{ width: "100%" }}
+                  viewport={{ once: true }}
+                  transition={{ duration: 0.8, delay: 0.2 }}
+                />
+              </h3>
+              <div className="space-y-4">
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/50">Year</span>
+                  <span>{project.year}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/50">Category</span>
+                  <span>{project.category}</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/50">Client</span>
+                  <span>Studio Ghibli</span>
+                </div>
+                <div className="flex justify-between text-sm">
+                  <span className="text-white/50">Role</span>
+                  <span>Lead Developer</span>
+                </div>
+              </div>
+            </motion.div>
+          </div>
+        </div>
+      </motion.div>
+
+      {/* Next/Previous project navigation */}
+      <div className="max-w-7xl mx-auto px-6 md:px-10 py-20 border-t border-white/10">
+        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-10">
+          {Number.parseInt(project.id) > 1 && (
+            <Link
+              href={`/work/${Number.parseInt(project.id) - 1}`}
+              className="group"
+              onMouseEnter={handleLinkEnter}
+              onMouseLeave={handleLinkLeave}
+            >
+              <div className="text-xs uppercase tracking-widest text-white/50 mb-2">Previous Project</div>
+              <div className="flex items-center gap-3 text-xl md:text-2xl font-serif group-hover:text-white/80 transition-colors">
+                <ArrowLeft size={20} className="group-hover:-translate-x-2 transition-transform duration-300" />
+                <span>
+                  {projects.projects.find((p) => p.id === String(Number.parseInt(project.id) - 1))?.title || ""}
+                </span>
+              </div>
+            </Link>
+          )}
+
+          {Number.parseInt(project.id) < projects.projects.length && (
+            <Link
+              href={`/work/${Number.parseInt(project.id) + 1}`}
+              className="group ml-auto"
+              onMouseEnter={handleLinkEnter}
+              onMouseLeave={handleLinkLeave}
+            >
+              <div className="text-xs uppercase tracking-widest text-white/50 mb-2 text-right">Next Project</div>
+              <div className="flex items-center gap-3 text-xl md:text-2xl font-serif group-hover:text-white/80 transition-colors">
+                <span>
+                  {projects.projects.find((p) => p.id === String(Number.parseInt(project.id) + 1))?.title || ""}
+                </span>
+                <ArrowRight size={20} className="group-hover:translate-x-2 transition-transform duration-300" />
+              </div>
+            </Link>
+          )}
+        </div>
+      </div>
+
+      {/* Keyboard navigation hint */}
+      <div className="fixed bottom-10 right-10 z-10 hidden md:flex items-center gap-3 text-white/40 text-xs">
+        <span>Use</span>
+        <div className="border border-white/20 rounded px-2 py-1">←</div>
+        <div className="border border-white/20 rounded px-2 py-1">→</div>
+        <span>to navigate projects</span>
+      </div>
+    </main>
   )
 }
 

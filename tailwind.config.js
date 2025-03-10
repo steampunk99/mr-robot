@@ -18,9 +18,9 @@ module.exports = {
     },
     extend: {
       fontFamily: {
-        sans: ["var(--font-outfit)", "system-ui", "sans-serif"],
-        display: ["var(--font-unbounded)", "system-ui", "sans-serif"],
-        unique: ["var(--font-unique)", "cursive"],
+        sans: ["var(--font-outfit)", "system-ui", "monospace"],
+        display: ["var(--font-unbounded)", "serif"],
+        unique: ["var(--font-unique)", "monospace"],
       },
       colors: {
         border: "hsl(var(--border))",
