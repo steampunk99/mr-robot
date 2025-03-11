@@ -40,6 +40,7 @@ export function ContactSection() {
     <section id="contact" ref={containerRef} className="min-h-screen py-32 relative">
       <motion.div className="max-w-7xl mx-auto px-6 md:px-12" style={{ opacity, scale }}>
         <motion.h2
+        
           className="text-7xl md:text-7xl font-black tracking-tighter mb-24"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0.3 }}
@@ -95,7 +96,7 @@ export function ContactSection() {
             </div>
           </div>
 
-          <div>
+          <div >
             <form onSubmit={handleSubmit}>
               <motion.div
                 className="mb-8"

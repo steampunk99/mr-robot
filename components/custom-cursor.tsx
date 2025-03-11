@@ -1,6 +1,7 @@
 "use client"
+
 // components/CustomCursor.tsx
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { motion, useMotionValue, useSpring, useAnimation } from "framer-motion";
 
 // Animation parameters that can be easily adjusted
@@ -12,8 +13,13 @@ const cursorAnimationConfig = {
   },
   outer: {
     default: { scale: 1, opacity: 1 },
-    hover: { scale: 2, opacity: 0.6 },
+    hover: { scale: 2, opacity: 0.8 },
     transition: { duration: 0.4, ease: "easeOut" }
+  },
+  text: {
+    default: { opacity: 0, scale: 0.8 },
+    hover: { opacity: 1, scale: 1 },
+    transition: { duration: 0.3, ease: "easeOut" }
   }
 };
 
@@ -21,15 +27,18 @@ const CustomCursor: React.FC = () => {
   // Motion values for the cursor
   const cursorX = useMotionValue(0);
   const cursorY = useMotionValue(0);
+  
+  // State to store the current hover text
+  const [cursorText, setCursorText] = useState("");
 
-  // Smooth delay effect for the outer ring with adjusted stiffness and damping
-  // Lower stiffness creates more lag, higher damping makes movement smoother
+  // Smooth delay effect for the outer ring
   const outerX = useSpring(cursorX, { stiffness: 100, damping: 20 });
   const outerY = useSpring(cursorY, { stiffness: 100, damping: 20 });
 
-  // Animation controls for scaling & interactions
+  // Animation controls
   const innerControls = useAnimation();
   const outerControls = useAnimation();
+  const textControls = useAnimation();
   
   // Ref to track whether mouse interactions are working
   const interactionCounter = useRef(0);
@@ -37,101 +46,118 @@ const CustomCursor: React.FC = () => {
   // Size configurations for cursor elements
   const innerSize = 12;
   const outerSize = 50;
+  // Larger size when showing text
+  const expandedSize = 80;
 
   useEffect(() => {
     console.log("CustomCursor component mounted");
 
     const moveCursor = (e: MouseEvent) => {
-      // Update cursor position with mouse coordinates
       cursorX.set(e.clientX);
       cursorY.set(e.clientY);
     };
 
     const handleHoverStart = (e: MouseEvent) => {
-      // Log for debugging mouse interactions
       interactionCounter.current += 1;
       console.log(`Hover start detected on: ${(e.target as HTMLElement).tagName}, count: ${interactionCounter.current}`);
       
-      // Animate the inner cursor with animation config
+      // Get the data-cursor-text attribute or use a default
+      const targetElement = e.target as HTMLElement;
+      const hoverText = targetElement.getAttribute('data-cursor-text') || "";
+      
+      // Update cursor text and animate
+      setCursorText(hoverText);
+      
+      // Animate inner cursor
       innerControls.start({
         ...cursorAnimationConfig.inner.hover,
         transition: cursorAnimationConfig.inner.transition
       });
       
-      // Animate the outer cursor with animation config
+      // Animate outer cursor - make it bigger if we have text
       outerControls.start({
         ...cursorAnimationConfig.outer.hover,
+        scale: hoverText ? 3 : cursorAnimationConfig.outer.hover.scale,
         transition: cursorAnimationConfig.outer.transition
       });
+      
+      // Animate text visibility
+      if (hoverText) {
+        textControls.start({
+          ...cursorAnimationConfig.text.hover,
+          transition: cursorAnimationConfig.text.transition
+        });
+      }
     };
 
     const handleHoverEnd = (e: MouseEvent) => {
-      // Log for debugging mouse interactions
       console.log(`Hover end detected on: ${(e.target as HTMLElement).tagName}`);
       
-      // Return inner cursor to default state
+      // Return to default states
       innerControls.start({
         ...cursorAnimationConfig.inner.default,
         transition: cursorAnimationConfig.inner.transition
       });
       
-      // Return outer cursor to default state
       outerControls.start({
         ...cursorAnimationConfig.outer.default,
         transition: cursorAnimationConfig.outer.transition
       });
+      
+      textControls.start({
+        ...cursorAnimationConfig.text.default,
+        transition: cursorAnimationConfig.text.transition
+      });
+      
+      // Clear text after animation finishes
+      setTimeout(() => setCursorText(""), 300);
     };
 
-    // Add mouse move event listener
     window.addEventListener("mousemove", moveCursor);
 
-    // Function to attach event listeners to interactive elements
     const attachInteractionListeners = () => {
-      // Select all interactive elements
       const interactiveElements = document.querySelectorAll("a, button, .interactive");
       console.log(`Found ${interactiveElements.length} interactive elements`);
       
       interactiveElements.forEach((el) => {
-        // Skip elements that already have listeners
         if (el.hasAttribute("cursor-listener")) return;
         
-        // Attach event listeners
         el.addEventListener("mouseenter", handleHoverStart);
         el.addEventListener("mouseleave", handleHoverEnd);
         
-        // Mark element to avoid duplicate listeners
+        // If element doesn't have data-cursor-text, add a default based on element type
+        if (!el.hasAttribute("data-cursor-text")) {
+          if (el.tagName === "A") {
+            el.setAttribute("data-cursor-text", "Click me");
+          } else if (el.tagName === "BUTTON") {
+            el.setAttribute("data-cursor-text", "Tap me");
+          }
+        }
+        
         el.setAttribute("cursor-listener", "true");
       });
     };
 
-    // Initial attachment of event listeners
     attachInteractionListeners();
 
-    // Setup MutationObserver to detect new elements
     const observer = new MutationObserver(() => {
-      // When DOM changes, check for new interactive elements
       attachInteractionListeners();
     });
 
-    // Start observing document body for added/removed nodes
     observer.observe(document.body, { childList: true, subtree: true });
 
-    // Cleanup function - runs when component unmounts
     return () => {
-      // Remove global mouse move listener
       window.removeEventListener("mousemove", moveCursor);
       
-      // Remove all interaction listeners
       document.querySelectorAll("[cursor-listener='true']").forEach((el) => {
         el.removeEventListener("mouseenter", handleHoverStart);
         el.removeEventListener("mouseleave", handleHoverEnd);
         el.removeAttribute("cursor-listener");
       });
       
-      // Disconnect mutation observer
       observer.disconnect();
     };
-  }, [cursorX, cursorY, innerControls, outerControls]);
+  }, [cursorX, cursorY, innerControls, outerControls, textControls]);
 
   return (
     <>
@@ -140,19 +166,17 @@ const CustomCursor: React.FC = () => {
         animate={innerControls}
         style={{
           position: "fixed",
-          // Center the element by offsetting half its width and height
           top: -innerSize / 2, 
           left: -innerSize / 2,
           width: innerSize,
           height: innerSize,
           borderRadius: "50%",
           background: "radial-gradient(circle, rgba(255,255,255,0.8) 10%, rgba(255,255,255,0) 80%)",
-          pointerEvents: "none", // Ensure it doesn't interfere with mouse events
+          pointerEvents: "none",
           x: cursorX,
           y: cursorY,
           zIndex: 9999,
           mixBlendMode: "difference",
-          // Adding a subtle box shadow for better visibility
           boxShadow: "0 0 5px rgba(255,255,255,0.5)"
         }}
       />
@@ -162,22 +186,49 @@ const CustomCursor: React.FC = () => {
         animate={outerControls}
         style={{
           position: "fixed",
-          // Center the element by offsetting half its width and height
           top: -outerSize / 2,
           left: -outerSize / 2,
           width: outerSize,
           height: outerSize,
           borderRadius: "50%",
           border: "1px solid rgba(255,255,255,0.5)",
-          pointerEvents: "none", // Ensure it doesn't interfere with mouse events
+          pointerEvents: "none",
           x: outerX,
           y: outerY,
           zIndex: 9998,
           mixBlendMode: "exclusion",
-          // Making the border slightly more visible
-          boxShadow: "0 0 10px rgba(255,255,255,0.2)"
+          boxShadow: "0 0 10px rgba(255,255,255,0.2)",
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center"
         }}
       />
+      
+      {/* Text within the cursor */}
+      <motion.div
+        animate={textControls}
+        initial={cursorAnimationConfig.text.default}
+        style={{
+          position: "fixed",
+          pointerEvents: "none",
+          x: outerX,
+          y: outerY,
+          zIndex: 10000,
+          fontSize: "14px",
+          fontWeight: "bold",
+        
+          padding: "8px 8px",
+          color: "#00FF00",
+          textShadow: "0 0 3px rgba(0,0,0,0.8)",
+          textAlign: "center",
+          whiteSpace: "nowrap",
+          transform: "translate(-50%, -50%)",
+          textTransform: "uppercase",
+          letterSpacing: "1px"
+        }}
+      >
+        {cursorText}
+      </motion.div>
     </>
   );
 };

@@ -144,7 +144,7 @@ export default function Home() {
           
           
           {/* Update the robot container to enable proper mouse tracking */}
-          <div className="absolute right-[5%] top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
+          <div  className="absolute right-[5%] top-1/2 -translate-y-1/2 opacity-20 hidden md:block">
             <SteampunkRobotFull 
               width={600} 
               height={600} 
