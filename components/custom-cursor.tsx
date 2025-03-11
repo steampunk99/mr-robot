@@ -32,8 +32,8 @@ const CustomCursor: React.FC = () => {
   const [cursorText, setCursorText] = useState("");
 
   // Smooth delay effect for the outer ring
-  const outerX = useSpring(cursorX, { stiffness: 100, damping: 20 });
-  const outerY = useSpring(cursorY, { stiffness: 100, damping: 20 });
+  const outerX = useSpring(cursorX, { stiffness: 100, damping: 18 });
+  const outerY = useSpring(cursorY, { stiffness: 100, damping: 18 });
 
   // Animation controls
   const innerControls = useAnimation();
@@ -44,10 +44,10 @@ const CustomCursor: React.FC = () => {
   const interactionCounter = useRef(0);
 
   // Size configurations for cursor elements
-  const innerSize = 12;
+  const innerSize = 24;
   const outerSize = 50;
   // Larger size when showing text
-  const expandedSize = 80;
+  const expandedSize = 180;
 
   useEffect(() => {
     console.log("CustomCursor component mounted");
