@@ -7,6 +7,7 @@ import { SmoothScrollProvider } from "@/context/smooth-scroll"
 import { ScrollToTop } from "@/components/scroll-to-top"
 import { ScrollProgress } from "@/components/scroll-progress"
 import InitialLoader from "@/components/initial-loader"
+import CustomCursor from "@/components/custom-cursor"
 import "./globals.css"
 
 const spaceGrotesk = Space_Grotesk({
@@ -47,11 +48,12 @@ export default function RootLayout({
         <div className="fixed inset-0 bg-black"></div>
         <SmoothScrollProvider>
           <InitialLoader />
-        
+          <main> 
+            <CustomCursor />
           <ScrollProgress />
           <Navigation />
             <PageTransition>{children}</PageTransition>
-         
+          </main>
         </SmoothScrollProvider>
       </body>
     </html>

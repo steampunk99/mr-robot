@@ -18,6 +18,7 @@ import ProjectCard from "@/components/project-card"
 import { ContactSection } from "@/components/contact"
 
 
+
 export default function Home() {
   const heroSectionRef = useRef(null)
   const aboutSectionRef = useRef(null)
@@ -92,8 +93,8 @@ export default function Home() {
 
 
   return (
-    <main className="w-full min-h-screen relative bg-black text-white">
-     
+    <main className="w-full min-h-screen relative bg-black text-white ">
+    
       {/* Scroll indicator */}
       <ScrollIndicator sections={sections} />
       
@@ -137,7 +138,7 @@ export default function Home() {
           <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff09_0,transparent_100%)]"></div>
           
           {/* Grid lines */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff09_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff09_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:400px_400px]"></div>
         </div>
         <div className="w-full h-full absolute top-0 left-0">
           
