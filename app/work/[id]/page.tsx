@@ -7,7 +7,7 @@ import Image from "next/image"
 import { ChevronLeft, ExternalLink, Github, ArrowRight, ArrowLeft } from "lucide-react"
 import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion"
 import projects from "@/data/projects.json"
-import ProjectCursor from "@/components/project-cursor"
+
 
 export default function ProjectPage({ params }: { params: { id: string } }) {
   const router = useRouter()
@@ -90,7 +90,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
 
   return (
     <main ref={containerRef} className="bg-black text-white min-h-screen overflow-x-hidden">
-      <ProjectCursor mode={cursorMode} text={cursorText} />
+    
 
       {/* Hero section */}
       <div className="relative h-screen w-full overflow-hidden">
