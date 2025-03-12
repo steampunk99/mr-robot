@@ -2,7 +2,7 @@
 
 import { useState, useEffect, useRef } from "react"
 import { motion, AnimatePresence } from "framer-motion"
-import SteampunkRobot from "./steampunk-robot"
+import SteampunkRobot from "./robot/steampunk-robot"
 import { useSmoothScroll } from "@/context/smooth-scroll"
 import { usePathname } from "next/navigation"
 
@@ -97,6 +97,14 @@ export default function InitialLoader() {
           className="fixed inset-0 z-[9999] bg-black flex flex-col items-center justify-center overflow-hidden"
           exit={{ opacity: 0 }}
           transition={{ duration: 0.3 }}
+          onAnimationComplete={() => {
+            // Force cleanup of DOM element when animation completes
+            if (phase === "complete") {
+              setExit(true);
+              // Ensure scroll is enabled
+              if (lenis) lenis.start();
+            }
+          }}
         >
           <GridPattern />
 
@@ -150,6 +158,13 @@ export default function InitialLoader() {
                 initial={{ scaleX: 1, originX: "100%" }}
                 animate={{ scaleX: 0 }}
                 transition={{ duration: 0.9, ease: [0.22, 1, 0.36, 1], delay: 0.2 + 0.4 }}
+                onAnimationComplete={() => {
+                  // Ensure we clean up after animation completes
+                  if (phase === "complete") {
+                    setExit(true);
+                    if (lenis) lenis.start();
+                  }
+                }}
               />
             </>
           )}

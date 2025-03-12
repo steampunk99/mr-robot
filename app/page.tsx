@@ -1,23 +1,16 @@
 "use client"
 
-
-import { useRef, useState, useEffect } from "react"
+import { useRef,useState } from "react"
 import { motion } from "framer-motion"
-import { usePathname } from "next/navigation"
-import AboutSection from "@/components/about-section"
+import AboutSection from "@/components/home/about-section"
 import Link from "next/link"
-import Image from "next/image"
-import { ArrowUpRight, ChevronUp } from "lucide-react"
-import SocialAvatars from "@/components/social-avatars"
-import ScrollIndicator from "@/components/scroll-indicator"
-import SteampunkRobotFull from "@/components/steampunk-robotfull"
-import ParagraphReveal, { ParallaxText, ContentFade } from "@/components/paragraph-reveal"
+import { ChevronUp, ChevronRight } from "lucide-react"
+import ParagraphReveal, { ParallaxText } from "@/components/paragraph-reveal"
 import projects from "@/data/projects.json"
-import AnimatedTextReveal from "@/components/animated-text-reveal"
 import ProjectCard from "@/components/project-card"
-import { ContactSection } from "@/components/contact"
-import HeroSection from "@/components/hero"
-
+import { ContactSection } from "@/components/home/contact"
+import HeroSection from "@/components/home/hero"
+import useMousePosition from "@/hooks/use-mouse-position"
 
 
 export default function Home() {
@@ -25,98 +18,23 @@ export default function Home() {
   const aboutSectionRef = useRef(null)
   const workSectionRef = useRef(null)
   const contactSectionRef = useRef(null)
-  const pathname = usePathname()
-  const [showScrollTop, setShowScrollTop] = useState(false)
-  const [isMobile, setIsMobile] = useState(false)
 
-  // Hide browser scrollbar
-  useEffect(() => {
-    document.documentElement.style.scrollbarWidth = 'none'; // Firefox
+  const [isHovered, setIsHovered] = useState(false);
 
-    
-    // For Chrome, Safari, etc.
-    const styleElement = document.createElement('style');
-    styleElement.textContent = `
-      ::-webkit-scrollbar {
-        display: none;
-      }
-      body {
-        -ms-overflow-style: none;
-        scrollbar-width: none;
-      }
-    `;
-    document.head.appendChild(styleElement);
-    
-    // Check if on mobile
-    const checkMobile = () => {
-      setIsMobile(window.innerWidth < 768);
-    }
-    
-    checkMobile();
-    window.addEventListener('resize', checkMobile);
-    
-    return () => {
-      document.documentElement.style.scrollbarWidth = '';
-      document.head.removeChild(styleElement);
-      window.removeEventListener('resize', checkMobile);
-    }
-  }, []);
+  const { x, y } = useMousePosition();
 
-  // Show scroll to top button after scrolling down
-  useEffect(() => {
-    const handleScroll = () => {
-      if (window.scrollY > window.innerHeight) {
-        setShowScrollTop(true)
-      } else {
-        setShowScrollTop(false)
-      }
-    }
-
-    window.addEventListener("scroll", handleScroll)
-    return () => window.removeEventListener("scroll", handleScroll)
-  }, [])
-
-  const scrollToTop = () => {
-    window.scrollTo({
-      top: 0,
-      behavior: "smooth"
-    })
-  }
-
-  // Sections for scroll indicator
-  const sections = [
-    { id: "hero", name: "Home" },
-    { id: "about", name: "About" },
-    { id: "work", name: "Work" },
-    { id: "contact", name: "Contact" }
-  ]
-
-
+  const size = isHovered ? 400 : 40;
 
   return (
-    <main className="w-full min-h-screen relative bg-black text-white ">
-    
-      {/* Scroll indicator */}
-      <ScrollIndicator sections={sections} />
+    <main className="w-full min-h-screen relative bg-black text-white overflow-hidden">
+      {/* Interactive Robot that responds to scrolling */}
+     
+     
       
-      {/* Scroll to top button */}
-      <motion.button
-        className="fixed right-8 bottom-8 w-10 h-10 flex items-center justify-center border border-neutral-800 rounded-full z-50 bg-black"
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ 
-          opacity: showScrollTop ? 1 : 0, 
-          y: showScrollTop ? 0 : 20,
-          pointerEvents: showScrollTop ? "auto" : "none"
-        }}
-        onClick={scrollToTop}
-        whileHover={{ scale: 1.1 }}
-        whileTap={{ scale: 0.95 }}
-      >
-        <ChevronUp size={16} className="text-white" />
-      </motion.button>
-
       {/* Hero section */}
-     <HeroSection/>
+      <section id="home" ref={heroSectionRef}>
+        <HeroSection />
+      </section>
 
       {/* About section */}
       <section id="about" ref={aboutSectionRef}>
@@ -124,7 +42,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section id="work" ref={workSectionRef} className="py-32 px-4 md:px-8 bg-black">
+      <section id="work" ref={workSectionRef} className="py-32 px-4 md:px-8 lg:px-16 bg-black">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -133,33 +51,73 @@ export default function Home() {
           className="space-y-2 mb-16"
         >
           <div className="text-neutral-400 text-sm tracking-wider uppercase">Selected Work</div>
-          <ParallaxText baseVelocity={-2} className="text-2xl p-24 font-bold">Recent projects</ParallaxText>
+          <ParallaxText baseVelocity={-2} className="md:p-12">
+            Projects
+          </ParallaxText>
         </motion.div>
+
+        {/* Grid pattern background */}
+        <div className="absolute inset-0 grid grid-cols-6 pointer-events-none opacity-20">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="border-l border-white/5 h-full" />
+          ))}
+        </div>
+        <div className="absolute inset-0 grid grid-rows-6 pointer-events-none opacity-20">
+          {Array.from({ length: 5 }).map((_, i) => (
+            <div key={i} className="border-t border-white/5 w-full" />
+          ))}
+        </div>
 
         <div className="space-y-32">
           {projects.projects.slice(0,3).map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
+        
+        <motion.div 
+          className="mt-24 flex justify-center"
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          transition={{ duration: 0.5, delay: 0.2 }}
+          viewport={{ once: true }}
+        >
+          <Link href="/work" className="group relative flex items-center justify-center gap-2 px-8 py-3 border border-white/10 rounded-full hover:bg-white/5 transition-all duration-300">
+            <span className="text-white/80 group-hover:text-white transition-colors">
+              View all projects
+            </span>
+            <motion.div
+              className="opacity-0 -translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+            >
+              <ChevronRight size={16} className="text-white" />
+            </motion.div>
+            
+            {/* Hover effect */}
+            <motion.div 
+              className="absolute inset-0 -z-10 rounded-full opacity-0 group-hover:opacity-100 transition-opacity"
+              style={{
+                background: "radial-gradient(circle, rgba(255,255,255,0.05) 0%, rgba(255,255,255,0) 70%)"
+              }}
+            />
+          </Link>
+        </motion.div>
       </section>
 
       {/* Contact Section */}
-      <section id="contact" ref={contactSectionRef} className="py-20 border-t relative border-neutral-800">
-         {/* Background wrapper */}
-             {/* Background elements */}
-             <div className="absolute inset-0">
-          {/* Noise texture */}
-          <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]"></div>
-          
-          {/* Gradient overlay */}
-          <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff09_0,transparent_100%)]"></div>
-          
-          {/* Grid lines */}
-          <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff09_1px,transparent_1px),linear-gradient(to_bottom,#ffffff05_1px,transparent_1px)] bg-[size:100px_100px]"></div>
-        </div>
-
-        <ContactSection/>
+      <section id="contact" ref={contactSectionRef}>
+        <ContactSection />
       </section>
+      
+      {/* Scroll to top button */}
+      <motion.a
+        href="#home"
+        className="fixed right-8 bottom-8 size-12 bg-white/10 rounded-full flex items-center justify-center backdrop-blur-sm border border-white/10 hover:bg-white/20 transition-colors z-40"
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        transition={{ delay: 1 }}
+        whileHover={{ y: -5 }}
+      >
+        <ChevronUp className="size-5" />
+      </motion.a>
     </main>
   )
 }

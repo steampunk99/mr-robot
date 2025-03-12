@@ -207,7 +207,7 @@ export function ParallaxText({
     <div ref={containerRef} className={`${className} overflow-hidden whitespace-nowrap`}>
       <motion.div
         style={{ x: xPos }}
-        className="text-[clamp(2rem,8vw,8rem)] font-medium tracking-tighter"
+        className="text-[clamp(5rem,25vw,20rem)] font-thin leading-[0.85] tracking-tighter"
       >
         {children}
       </motion.div>

@@ -1,13 +1,20 @@
 "use client"
 
-import { useState, useEffect, useRef } from "react"
-import { motion, AnimatePresence, useInView } from "framer-motion"
+import { useState, useRef, useEffect } from "react"
+import { 
+  motion, 
+  AnimatePresence, 
+  useScroll, 
+  useTransform, 
+  useMotionValue, 
+  useSpring, 
+  MotionValue 
+} from "framer-motion"
 import Image from "next/image"
-import { ExternalLink, Github, ChevronRight, ChevronLeft } from "lucide-react"
-import { ParallaxElement, ParallaxLayer, ParallaxSection, ParallaxScale } from "@/components/parallax"
-import useParallax from "@/hooks/use-parallax"
+import { ArrowUpRight, Code, Eye, X, ChevronLeft, ChevronRight } from "lucide-react"
+import { useMediaQuery } from "@/hooks/use-mediaquery"
 
-interface ProjectProps {
+interface ProjectCardProps {
   project: {
     id: string
     title: string
@@ -23,210 +30,580 @@ interface ProjectProps {
     features: string[]
   }
   index: number
+  featured?: boolean
+  layout?: "vertical" | "horizontal"
 }
 
-export default function ProjectCard({ project, index }: ProjectProps) {
-  const [activeImageIndex, setActiveImageIndex] = useState(0)
-  const [isHovering, setIsHovering] = useState(false)
+export default function ProjectCard({ 
+  project, 
+  index, 
+  featured = false,
+  layout = "horizontal" 
+}: ProjectCardProps) {
+  const [isOpen, setIsOpen] = useState(false)
+  const [imageIndex, setImageIndex] = useState(0)
   const cardRef = useRef<HTMLDivElement>(null)
-  const isInView = useInView(cardRef, { once: false, amount: 0.2 })
+  const projectImageRef = useRef<HTMLDivElement>(null)
+  const isMobile = useMediaQuery("(max-width: 768px)")
   
-  // Parallax effects
-  const { ref: imageRef, style: imageStyle } = useParallax({
-    direction: index % 2 === 0 ? "right" : "left",
-    speed: 0.5,
-    range: [0, 60]
-  })
+  // For mouse interaction on the card
+  const mouseX = useMotionValue(0)
+  const mouseY = useMotionValue(0)
   
-  const { ref: contentRef, style: contentStyle } = useParallax({
-    direction: index % 2 === 0 ? "left" : "right",
-    speed: 0.3,
-    range: [0, 40]
-  })
-
-  // Auto-rotate images every 5 seconds if not hovering
-  useEffect(() => {
-    if (project.images.length <= 1 || isHovering) return
-
-    const interval = setInterval(() => {
-      setActiveImageIndex((prev) => (prev + 1) % project.images.length)
-    }, 5000)
-
-    return () => clearInterval(interval)
-  }, [project.images.length, isHovering])
-
-  const nextImage = () => {
-    setActiveImageIndex((prev) => (prev + 1) % project.images.length)
+  // For image transitions
+  const imageControls = {
+    x: useMotionValue(0),
+    scale: useMotionValue(1)
   }
-
+  
+  // For spring physics
+  const rotateX = useSpring(0, { stiffness: 100, damping: 30 })
+  const rotateY = useSpring(0, { stiffness: 100, damping: 30 })
+  const scaleSpring = useSpring(1, { stiffness: 400, damping: 30 })
+  
+  // For scroll-based reveal effect
+  const { scrollYProgress } = useScroll({
+    target: cardRef,
+    offset: ["start end", "end start"]
+  })
+  
+  const opacity = useTransform(scrollYProgress, [0, 0.2, 0.9, 1], [0, 1, 1, 0])
+  const y = useTransform(scrollYProgress, [0, 0.2, 0.9, 1], [60, 0, 0, -60])
+  
+  // For image auto-rotation
+  useEffect(() => {
+    if (isOpen || project.images.length <= 1) return
+    
+    const interval = setInterval(() => {
+      setImageIndex(prev => (prev + 1) % project.images.length)
+    }, 5000)
+    
+    return () => clearInterval(interval)
+  }, [isOpen, project.images.length])
+  
+  // Handle mouse movement for 3D effect
+  const handleMouseMove = (e: React.MouseEvent<HTMLDivElement>) => {
+    if (!projectImageRef.current || isOpen || isMobile) return
+    
+    const rect = projectImageRef.current.getBoundingClientRect()
+    const centerX = rect.left + rect.width / 2
+    const centerY = rect.top + rect.height / 2
+    
+    const percentX = (e.clientX - centerX) / (rect.width / 2)
+    const percentY = (e.clientY - centerY) / (rect.height / 2)
+    
+    // Update motion values
+    mouseX.set(e.clientX - rect.left)
+    mouseY.set(e.clientY - rect.top)
+    
+    // Update rotation with springs
+    rotateY.set(percentX * 5) // -5 to 5 degrees
+    rotateX.set(percentY * -5) // 5 to -5 degrees (inverted)
+  }
+  
+  const handleMouseEnter = () => {
+    scaleSpring.set(1.02)
+  }
+  
+  const handleMouseLeave = () => {
+    // Reset all values
+    mouseX.set(0)
+    mouseY.set(0)
+    rotateX.set(0)
+    rotateY.set(0)
+    scaleSpring.set(1)
+  }
+  
+  const nextImage = () => {
+    setImageIndex(prev => (prev + 1) % project.images.length)
+  }
+  
   const prevImage = () => {
-    setActiveImageIndex((prev) => (prev - 1 + project.images.length) % project.images.length)
+    setImageIndex(prev => (prev - 1 + project.images.length) % project.images.length)
+  }
+  
+  // Get gradient angle based on index for unique card styling
+  const getGradientAngle = () => {
+    return ((index % 4) * 45) + 45
   }
 
   return (
-    <div 
+    <motion.div
       ref={cardRef}
-      className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl mx-auto px-10 h-full items-center"
+      className={`w-full relative ${featured ? 'mb-40' : 'mb-24 md:mb-32'}`}
+      style={{ opacity, y }}
     >
-      {/* Project details with parallax effects */}
-      <motion.div 
-        ref={contentRef}
-        style={contentStyle}
-        className={`${index % 2 === 1 ? "md:order-2" : ""}`}
-        initial={{ opacity: 0, y: 30 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-        transition={{ duration: 0.8, delay: 0.2 }}
-      >
-        <ParallaxElement direction="up" speed={0.2} className="mb-4">
-          <div className="flex items-center space-x-2 text-neutral-400 mb-4">
-            <span className="text-sm">{project.year}</span>
-            <span className="text-neutral-700">•</span>
-            <span className="text-sm">{project.category}</span>
-          </div>
-        </ParallaxElement>
-        
-        <ParallaxElement direction="up" speed={0.3} delay={0.1}>
-          <h3 className="text-3xl md:text-4xl font-light mb-4">{project.title}</h3>
-        </ParallaxElement>
-        
-        <ParallaxElement direction="up" speed={0.4} delay={0.2}>
-          <p className="text-neutral-400 mb-8 leading-relaxed">
-            {project.description}
-          </p>
-        </ParallaxElement>
-
-        <ParallaxElement direction="up" speed={0.5} delay={0.3}>
-          <div className="flex flex-wrap gap-2 mb-8">
-            {project.tags.map((tag) => (
-              <span
-                key={tag}
-                className="text-xs px-3 py-1 border border-neutral-800 text-neutral-300 rounded-full"
-              >
-                {tag}
-              </span>
-            ))}
-          </div>
-        </ParallaxElement>
-
-        <ParallaxElement direction="up" speed={0.6} delay={0.4}>
-          <div className="flex items-center space-x-4">
-            {project.liveUrl && (
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-white hover:text-neutral-300 transition-colors"
-              >
-                <ExternalLink size={16} />
-                <span>Live Site</span>
-              </a>
-            )}
-            {project.githubUrl && (
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="flex items-center space-x-2 text-white hover:text-neutral-300 transition-colors"
-              >
-                <Github size={16} />
-                <span>Source Code</span>
-              </a>
-            )}
-          </div>
-        </ParallaxElement>
-      </motion.div>
-
-      {/* Project image with parallax effect */}
-      <motion.div 
-        ref={imageRef}
-        style={imageStyle}
-        className={`relative aspect-video overflow-hidden border border-neutral-800 rounded-md ${
-          index % 2 === 1 ? "md:order-1" : ""
-        }`}
-        initial={{ opacity: 0, y: 30 }}
-        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
-        transition={{ duration: 0.8 }}
-        onMouseEnter={() => setIsHovering(true)}
-        onMouseLeave={() => setIsHovering(false)}
-      >
-        <div className="absolute -top-6 -left-6 text-8xl font-serif text-white/10 select-none">
-          {String(index + 1).padStart(2, "0")}
-        </div>
-
-        <motion.div
-          className="relative h-full w-full overflow-hidden rounded-sm"
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ duration: 0.6 }}
-        >
-          <div className="absolute inset-0 bg-gradient-to-t from-black/40 to-transparent z-10" />
-
-          <AnimatePresence mode="wait">
-            <motion.div
-              key={activeImageIndex}
-              className="relative h-full w-full"
-              initial={{ opacity: 0, scale: 1.1 }}
-              animate={{ opacity: 1, scale: 1 }}
-              exit={{ opacity: 0 }}
-              transition={{ duration: 0.8 }}
+      <AnimatePresence mode="wait">
+        {isOpen ? (
+          <ProjectDetail 
+            project={project}
+            imageIndex={imageIndex}
+            setImageIndex={setImageIndex}
+            onClose={() => setIsOpen(false)}
+          />
+        ) : (
+          <motion.div
+            className={`group relative rounded-2xl overflow-hidden ${
+              layout === "horizontal" 
+                ? "grid md:grid-cols-2 gap-8 items-center" 
+                : "flex flex-col"
+            } ${featured ? "md:p-6" : "md:p-3"}`}
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            layoutId={`project-${project.id}`}
+            onMouseMove={handleMouseMove}
+            onMouseEnter={handleMouseEnter}
+            onMouseLeave={handleMouseLeave}
+          >
+            {/* Project image with 3D rotation effect */}
+            <motion.div 
+              ref={projectImageRef}
+              className={`relative rounded-xl overflow-hidden aspect-video ${
+                layout === "horizontal" && index % 2 === 1 ? "md:order-2" : ""
+              }`}
+              style={{
+                perspective: 1000,
+                rotateX,
+                rotateY,
+                scale: scaleSpring,
+                boxShadow: "0 25px 50px -12px rgba(0, 0, 0, 0.4)"
+              }}
             >
-              <Image
-                src={project.images[activeImageIndex] || "/placeholder.svg"}
-                alt={`${project.title} - Image ${activeImageIndex + 1}`}
-                fill
-                className="object-cover"
-                priority
+              {/* Interactive overlay */}
+              <div 
+                className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/10 to-transparent z-10 transition-all duration-300 ease-out group-hover:opacity-60"
               />
-            </motion.div>
-          </AnimatePresence>
-
-          {/* Image navigation controls */}
-          {project.images.length > 1 && (
-            <>
-              {/* Image navigation dots */}
-              <div className="absolute bottom-6 left-1/2 -translate-x-1/2 z-20 flex gap-3">
-                {project.images.map((_, i) => (
-                  <button
-                    key={i}
-                    onClick={() => setActiveImageIndex(i)}
-                    className={`size-2 rounded-full transition-all duration-300 ${
-                      i === activeImageIndex ? "bg-white" : "bg-white/30"
-                    }`}
-                  />
-                ))}
+              
+              {/* Project number */}
+              <div className="absolute top-4 left-4 z-30">
+                <span className="text-xs font-medium text-white/70 bg-black/50 backdrop-blur-sm px-3 py-1 rounded-full">
+                  {String(index + 1).padStart(2, "0")}/{project.category}
+                </span>
               </div>
-
-              {/* Image navigation arrows */}
-              <motion.button
-                className="absolute left-4 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center border border-white/10"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  prevImage()
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isHovering ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
+              
+              {/* View project indicator (mobile) */}
+              {isMobile && (
+                <button
+                  onClick={() => setIsOpen(true)}
+                  className="absolute right-4 bottom-4 z-20 size-10 rounded-full bg-white flex items-center justify-center"
+                >
+                  <ArrowUpRight className="size-5 text-black" />
+                </button>
+              )}
+              
+              {/* Project images with crossfade transition */}
+              <AnimatePresence mode="crossfade">
+                <motion.div
+                  key={imageIndex}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8, ease: [0.16, 1, 0.3, 1] }}
+                >
+                  <Image
+                    src={project.images[imageIndex]}
+                    fill
+                    alt={project.title}
+                    className="object-cover"
+                    priority={featured}
+                  />
+                </motion.div>
+              </AnimatePresence>
+              
+              {/* Image navigation indicators */}
+              {project.images.length > 1 && (
+                <div className="absolute bottom-4 left-1/2 -translate-x-1/2 flex gap-1.5 z-20">
+                  {project.images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setImageIndex(idx)}
+                      className="relative"
+                    >
+                      <span 
+                        className={`block size-2 rounded-full transition-all duration-300 ${
+                          idx === imageIndex ? "bg-white" : "bg-white/40"
+                        }`}
+                      />
+                      
+                      {idx === imageIndex && (
+                        <motion.span
+                          className="absolute inset-0 -m-1 bg-white/0 rounded-full"
+                          animate={{
+                            scale: [1, 1.5, 1],
+                            opacity: [0, 0.2, 0]
+                          }}
+                          transition={{
+                            duration: 2,
+                            repeat: Infinity,
+                            repeatType: "loop"
+                          }}
+                        />
+                      )}
+                    </button>
+                  ))}
+                </div>
+              )}
+            </motion.div>
+            
+            {/* Project content */}
+            <div className={`${layout === "horizontal" && index % 2 === 1 ? "md:order-1" : ""}`}>
+              <motion.div 
+                className="pt-5 pb-2 md:py-0 space-y-4"
+                style={{ perspective: 1000 }}
               >
-                <ChevronLeft size={20} />
-              </motion.button>
+                {/* Project title & year */}
+                <div className="space-y-2">
+                  <div className="flex items-center gap-3">
+                    <div className="h-px w-8 bg-white/30" />
+                    <span className="text-xs text-white/60 uppercase tracking-wider">
+                      {project.year}
+                    </span>
+                  </div>
+                  
+                  <h3 className="text-2xl md:text-3xl font-light tracking-tight">
+                    {project.title}
+                  </h3>
+                </div>
+                
+                {/* Project description - truncated */}
+                <p className="text-white/70 text-sm md:text-base line-clamp-3">
+                  {project.description}
+                </p>
+                
+                {/* Project tags */}
+                <div className="flex flex-wrap gap-2">
+                  {project.tags.slice(0, isMobile ? 3 : 5).map(tag => (
+                    <span 
+                      key={tag}
+                      className="text-xs px-3 py-1 border border-white/10 rounded-full text-white/80"
+                    >
+                      {tag}
+                    </span>
+                  ))}
+                  
+                  {(isMobile ? project.tags.length > 3 : project.tags.length > 5) && (
+                    <span className="text-xs px-3 py-1 border border-white/10 rounded-full text-white/80">
+                      +{project.tags.length - (isMobile ? 3 : 5)}
+                    </span>
+                  )}
+                </div>
+                
+                {/* Project actions */}
+                <div className="flex items-center gap-4 pt-2">
+                  <button
+                    onClick={() => setIsOpen(true)}
+                    className="text-white group flex items-center gap-1.5 hover:gap-3 transition-all duration-300"
+                  >
+                    <span className="text-sm">View project</span>
+                    <ArrowUpRight className="size-4 transition-all duration-300" />
+                  </button>
+                </div>
+              </motion.div>
+            </div>
+            
+            {/* Featured badge for highlighted projects */}
+            {featured && (
+              <div className="absolute -top-3 -right-3 z-10 rotate-12">
+                <div 
+                  className="bg-white/10 backdrop-blur-sm text-white px-4 py-1 text-xs uppercase tracking-wider border border-white/20 rounded-full"
+                  style={{
+                    boxShadow: "0 10px 20px rgba(0, 0, 0, 0.2)"
+                  }}
+                >
+                  Featured
+                </div>
+              </div>
+            )}
+          </motion.div>
+        )}
+      </AnimatePresence>
+    </motion.div>
+  )
+}
 
-              <motion.button
-                className="absolute right-4 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full bg-black/30 backdrop-blur-sm flex items-center justify-center border border-white/10"
-                onClick={(e) => {
-                  e.stopPropagation()
-                  nextImage()
-                }}
-                initial={{ opacity: 0 }}
-                animate={{ opacity: isHovering ? 1 : 0 }}
-                transition={{ duration: 0.3 }}
-              >
-                <ChevronRight size={20} />
-              </motion.button>
-            </>
-          )}
-        </motion.div>
+// Detailed project view component
+function ProjectDetail({ 
+  project, 
+  imageIndex, 
+  setImageIndex, 
+  onClose 
+}: {
+  project: ProjectCardProps["project"]
+  imageIndex: number
+  setImageIndex: (index: number) => void
+  onClose: () => void
+}) {
+  const isMobile = useMediaQuery("(max-width: 768px)")
+  const containerRef = useRef<HTMLDivElement>(null)
+  const [activeTab, setActiveTab] = useState<"overview" | "features">("overview")
+  
+  // For image swiping on mobile
+  const dragX = useMotionValue(0)
+  const dragThreshold = 50
+  const dragEndRef = useRef(0)
+  
+  const handleDragEnd = () => {
+    const distance = dragEndRef.current
+    if (distance < -dragThreshold) {
+      nextImage()
+    } else if (distance > dragThreshold) {
+      prevImage()
+    }
+    dragX.set(0)
+    dragEndRef.current = 0
+  }
+  
+  const handleDrag = (_: any, info: any) => {
+    dragEndRef.current = info.offset.x
+    dragX.set(info.offset.x)
+  }
+  
+  const nextImage = () => {
+    setImageIndex(prev => (prev + 1) % project.images.length)
+  }
+  
+  const prevImage = () => {
+    setImageIndex(prev => (prev - 1 + project.images.length) % project.images.length)
+  }
+
+  return (
+    <motion.div
+      layoutId={`project-${project.id}`}
+      className="fixed inset-0 z-50 flex items-center justify-center p-4 md:p-10"
+      initial={{ opacity: 0 }}
+      animate={{ opacity: 1 }}
+      exit={{ opacity: 0 }}
+    >
+      {/* Backdrop */}
+      <motion.div 
+        className="absolute inset-0 bg-black/90 backdrop-blur-md"
+        initial={{ opacity: 0 }}
+        animate={{ opacity: 1 }}
+        exit={{ opacity: 0 }}
+        onClick={onClose}
+      />
+      
+      {/* Project detail container */}
+      <motion.div
+        ref={containerRef}
+        className="relative max-w-6xl w-full max-h-[90vh] bg-black/40 backdrop-blur-md border border-white/10 rounded-2xl overflow-hidden"
+        initial={{ scale: 0.95, y: 20 }}
+        animate={{ scale: 1, y: 0 }}
+        exit={{ scale: 0.95, y: 20 }}
+        transition={{ duration: 0.4, ease: [0.23, 1, 0.32, 1] }}
+      >
+        {/* Close button */}
+        <button
+          onClick={onClose}
+          className="absolute top-4 right-4 z-50 size-10 bg-black/40 backdrop-blur-sm rounded-full flex items-center justify-center border border-white/10"
+        >
+          <X className="size-5" />
+        </button>
+        
+        <div className={`grid ${isMobile ? 'grid-cols-1' : 'grid-cols-2'} h-full`}>
+          {/* Left: Image gallery */}
+          <div className="relative bg-black/60 h-[40vh] md:h-[90vh]">
+            <motion.div
+              drag={isMobile ? "x" : false}
+              dragConstraints={{ left: 0, right: 0 }}
+              onDragEnd={handleDragEnd}
+              onDrag={handleDrag}
+              style={{ x: dragX }}
+              className="h-full w-full"
+            >
+              <AnimatePresence mode="crossfade">
+                <motion.div
+                  key={imageIndex}
+                  className="absolute inset-0"
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  exit={{ opacity: 0 }}
+                  transition={{ duration: 0.8 }}
+                >
+                  <Image
+                    src={project.images[imageIndex]}
+                    fill
+                    alt={project.title}
+                    className="object-cover"
+                    priority
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-r from-black/50 to-transparent" />
+                </motion.div>
+              </AnimatePresence>
+            </motion.div>
+            
+            {/* Navigation controls */}
+            {project.images.length > 1 && (
+              <>
+                <button
+                  onClick={prevImage}
+                  className="absolute left-4 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/10"
+                >
+                  <ChevronLeft className="size-5" />
+                </button>
+                
+                <button
+                  onClick={nextImage}
+                  className="absolute right-4 top-1/2 -translate-y-1/2 z-20 size-10 rounded-full bg-black/40 backdrop-blur-sm flex items-center justify-center border border-white/10"
+                >
+                  <ChevronRight className="size-5" />
+                </button>
+              
+                {/* Image indicators */}
+                <div className="absolute bottom-4 left-4 flex gap-2">
+                  {project.images.map((_, idx) => (
+                    <button
+                      key={idx}
+                      onClick={() => setImageIndex(idx)}
+                      className={`size-3 rounded-full transition-all duration-300 ${
+                        idx === imageIndex ? "bg-white" : "bg-white/40"
+                      }`}
+                    />
+                  ))}
+                </div>
+              </>
+            )}
+            
+            {/* Project metadata overlay */}
+            <div className="absolute bottom-0 left-0 p-6 md:p-8">
+              <div className="flex items-center gap-3 mb-2">
+                <div className="h-px w-12 bg-white/40" />
+                <span className="text-xs text-white/70 uppercase tracking-wider">
+                  {project.year} • {project.category}
+                </span>
+              </div>
+              
+              <h2 className="text-3xl md:text-4xl font-light tracking-tight mb-1">
+                {project.title}
+              </h2>
+            </div>
+          </div>
+          
+          {/* Right: Project details */}
+          <div className="p-6 md:p-8 overflow-y-auto max-h-[50vh] md:max-h-[90vh]">
+            {/* Tab navigation - only on mobile */}
+            {isMobile && (
+              <div className="flex border border-white/10 rounded-lg p-0.5 mb-5 self-start">
+                <button
+                  onClick={() => setActiveTab("overview")}
+                  className={`py-1.5 px-4 text-sm rounded-md transition-colors ${
+                    activeTab === "overview" 
+                      ? "bg-white/10 text-white" 
+                      : "text-white/60 hover:text-white/80"
+                  }`}
+                >
+                  Overview
+                </button>
+                <button
+                  onClick={() => setActiveTab("features")}
+                  className={`py-1.5 px-4 text-sm rounded-md transition-colors ${
+                    activeTab === "features" 
+                      ? "bg-white/10 text-white" 
+                      : "text-white/60 hover:text-white/80"
+                  }`}
+                >
+                  Features
+                </button>
+              </div>
+            )}
+            
+            {/* Content */}
+            <AnimatePresence mode="wait">
+              {(!isMobile || activeTab === "overview") && (
+                <motion.div
+                  key="overview"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                  className={isMobile ? "" : "mb-10"}
+                >
+                  <div className="space-y-4">
+                    <p className="text-white/80 text-sm md:text-base leading-relaxed">
+                      {project.fullDescription}
+                    </p>
+                    
+                    {/* Tags */}
+                    <div className="flex flex-wrap gap-2 pt-2">
+                      {project.tags.map(tag => (
+                        <span 
+                          key={tag}
+                          className="text-xs px-3 py-1 border border-white/10 rounded-full text-white/80"
+                        >
+                          {tag}
+                        </span>
+                      ))}
+                    </div>
+                  </div>
+                </motion.div>
+              )}
+              
+              {(!isMobile || activeTab === "features") && (
+                <motion.div
+                  key="features"
+                  initial={{ opacity: 0, y: 10 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  exit={{ opacity: 0, y: -10 }}
+                  transition={{ duration: 0.3 }}
+                >
+                  {!isMobile && (
+                    <h3 className="text-xl font-light mb-4">Key Features</h3>
+                  )}
+                  
+                  <ul className="space-y-3">
+                    {project.features.map((feature, idx) => (
+                      <motion.li 
+                        key={idx}
+                        className="flex items-start gap-3 text-sm md:text-base text-white/70"
+                        initial={{ opacity: 0, x: -10 }}
+                        animate={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.3, delay: idx * 0.05 }}
+                      >
+                        <span className="text-white/40 mt-1">—</span>
+                        <span>{feature}</span>
+                      </motion.li>
+                    ))}
+                  </ul>
+                </motion.div>
+              )}
+            </AnimatePresence>
+            
+            {/* Project links */}
+            <div className="flex flex-wrap gap-3 mt-8 pt-4 border-t border-white/10">
+              {project.liveUrl && (
+                <motion.a
+                  href={project.liveUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white rounded-lg px-4 py-2"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Eye className="size-4" />
+                  <span className="text-sm">Live Site</span>
+                </motion.a>
+              )}
+              
+              {project.githubUrl && (
+                <motion.a
+                  href={project.githubUrl}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white rounded-lg px-4 py-2 border border-white/10"
+                  whileHover={{ scale: 1.05 }}
+                  whileTap={{ scale: 0.95 }}
+                >
+                  <Code className="size-4" />
+                  <span className="text-sm">Source Code</span>
+                </motion.a>
+              )}
+            </div>
+          </div>
+        </div>
       </motion.div>
-    </div>
+    </motion.div>
   )
 }
 

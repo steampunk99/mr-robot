@@ -17,17 +17,12 @@ export function SmoothScrollProvider({ children }: { children: ReactNode }) {
   const [lenis, setLenis] = useState<Lenis | null>(null)
 
   useEffect(() => {
+    // Simple configuration for Lenis to minimize issues
     const lenis = new Lenis({
-      duration: 0.8,  
+      duration: 0.6,  
       easing: (t: number) => Math.min(1, 1.001 - Math.pow(2, -10 * t)), 
       orientation: 'vertical',
-      gestureOrientation: 'vertical',
       smoothWheel: true,
-      
-      touchMultiplier: 2, 
-      wheelMultiplier: 1.2, 
-      
-      infinite: false,
     })
 
     function raf(time: number) {
