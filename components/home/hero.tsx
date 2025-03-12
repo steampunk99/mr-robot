@@ -73,19 +73,7 @@ const AnimatedCharacter = ({ character, index, isActive, onMouseEnter }: Animate
   );
 };
 
-// Dynamic background gradient that follows mouse
-const DynamicGradient = ({ mousePosition }: DynamicGradientProps) => {
-  const gradientX = useTransform(mousePosition.smooth.x, [0, 1], [0, 100]);
-  const gradientY = useTransform(mousePosition.smooth.y, [0, 1], [0, 100]);
-  const gradientBackground = useMotionTemplate`radial-gradient(circle at ${gradientX}% ${gradientY}%, rgba(70, 70, 70, 0.05) 0%, rgba(20, 20, 20, 0) 50%)`;
-  
-  return (
-    <motion.div 
-      className="absolute inset-0 opacity-80 z-0"
-      style={{ background: gradientBackground }}
-    />
-  );
-};
+
 
 // Main hero component
 export default function HeroSection() {
@@ -103,7 +91,7 @@ export default function HeroSection() {
     offset: ["start start", "end start"]
   });
   
-  const y = useTransform(scrollYProgress, [0, 1], [0, 400]);
+  const y = useTransform(scrollYProgress, [0, 1], [0, 600]);
   const opacity = useTransform(scrollYProgress, [0, 0.3], [1, 0]);
   const scale = useTransform(scrollYProgress, [0, 0.3], [1, 0.9]);
   
@@ -115,63 +103,29 @@ export default function HeroSection() {
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: [0.215, 0.61, 0.355, 1] }}
     >
-      {/* Dynamic background elements */}
-      <DynamicGradient mousePosition={mousePosition} />
+   
       
       {/* Minimal grid background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff08_1px,transparent_1px),linear-gradient(to_bottom,#ffffff08_1px,transparent_1px)] bg-[size:100px_100px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff11_1px,transparent_1px),linear-gradient(to_bottom,#ffffff11_1px,transparent_1px)] bg-[size:420px_300px]" />
       
-      {/* Decorative particles */}
-      <div className="absolute inset-0">
-        {Array.from({ length: 80 }).map((_, i) => {
-          // Calculate transformations based on mouse position
-          const xTransform = useTransform(
-            mousePosition.smooth.x,
-            [0, 1],
-            [`${Math.random() * 90}%`, `${Math.random() * 110}%`]
-          );
-          const yTransform = useTransform(
-            mousePosition.smooth.y,
-            [0, 1],
-            [`${Math.random() * 90}%`, `${Math.random() * 110}%`]
-          );
-          
-          return (
-            <motion.div
-              key={i}
-              className="absolute rounded-full bg-white/10"
-              initial={{
-                x: `${Math.random() * 100}%`,
-                y: `${Math.random() * 100}%`,
-                width: `${Math.random() * 3 + 1}px`,
-                height: `${Math.random() * 3 + 1}px`,
-                opacity: Math.random() * 0.5
-              }}
-              style={{
-                x: xTransform,
-                y: yTransform
-              }}
-            />
-          );
-        })}
-      </div>
+  
       
       {/* Minimalist rotating circles */}
       <motion.div 
-        className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[30vw] h-[30vw] opacity-20"
+        className="absolute right-[10%] top-1/2 -translate-y-1/2 w-[30vw] h-[30vw] opacity-15"
         style={{ 
           rotateX: useTransform(mousePosition.smooth.y, [0, 1], [-5, 5]),
           rotateY: useTransform(mousePosition.smooth.x, [0, 1], [5, -5]),
           transformPerspective: "1000px" 
         }}
       >
-        <div className="absolute inset-0 border border-white/20 rounded-full" />
-        <div className="absolute inset-[10%] border border-white/20 rounded-full" />
-        <div className="absolute inset-[20%] border border-white/20 rounded-full" />
-        <div className="absolute inset-[30%] border border-white/20 rounded-full" />
-        <div className="absolute inset-[40%] border border-white/20 rounded-full" />
+        <div className="absolute inset-0 border border-white/40 rounded-full" />
+        <div className="absolute inset-[10%] border border-white/50 rounded-full" />
+        <div className="absolute inset-[20%] border border-blue-700 rounded-full" />
+        <div className="absolute inset-[30%] border border-green-700 rounded-full" />
+        <div className="absolute inset-[40%] border border-yellow-700 rounded-full" />
         <motion.div 
-          className="absolute inset-[45%] bg-white/5 rounded-full"
+          className="absolute inset-[45%] bg-white/30 rounded-full"
           animate={{ scale: [1, 1.2, 1] }}
           transition={{ duration: 4, repeat: Infinity, ease: "easeInOut" }}
         />
@@ -197,7 +151,7 @@ export default function HeroSection() {
             transition={{ duration: 0.8, delay: 0.5 }}
             className="ml-1 mb-6 text-sm tracking-[0.3em] uppercase text-white/60"
           >
-             Design & Software Engineer
+             Designer & Software Engineer
           </motion.div>
           
           {/* Main headline */}
@@ -225,7 +179,7 @@ export default function HeroSection() {
             <motion.p 
               className="text-white/60 text-xl md:text-2xl font-extralight leading-relaxed mb-12"
             >
-              Building digital experiences with a focus on minimal aesthetics and thoughtful interactions.
+              I create digital experiences with a focus on functionality around visual aesthetics and thoughtful interactions.
             </motion.p>
             
             {/* CTA buttons with hover effect */}

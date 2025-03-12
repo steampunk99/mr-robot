@@ -165,12 +165,12 @@ export default function ProjectsPage() {
       {/* Header - Desktop & Mobile */}
       <div className="fixed top-24 left-0 w-full z-30 p-6 md:p-10 flex justify-between items-center">
         <motion.h1 
-          className="font-serif text-2xl md:text-3xl tracking-tighter"
+          className="text-[clamp(3rem,15vw,15rem)] font-thin leading-[0.85] tracking-tighter "
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <span className="font-light">Selected</span> Works
+          <span className="font-light">Work</span> 
         </motion.h1>
 
         {!isMobile && (
@@ -473,7 +473,7 @@ export default function ProjectsPage() {
                     transition={{ duration: 0.6, delay: 0.2 }}
                   >
                     <div className="w-8 md:w-12 h-[1px] bg-white/50" />
-                    <span className="text-xs md:text-sm uppercase tracking-widest text-white/70">About</span>
+                    <span className="text-xs md:text-sm uppercase tracking-widest text-white/70"></span>
                   </motion.div>
 
                   <motion.h2 
@@ -485,16 +485,6 @@ export default function ProjectsPage() {
                     Embracing the beauty of <span className="italic">imperfection</span> and asymmetry
                   </motion.h2>
 
-                  <motion.p 
-                    className="text-base md:text-lg text-white/70 max-w-xl leading-relaxed mb-6 md:mb-8"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.4 }}
-                  >
-                    My work is guided by the principles of <span className="text-white">wabi-sabi</span> and{" "}
-                    <span className="text-white">ma</span> — finding beauty in imperfection and the power of negative
-                    space. I believe in creating digital experiences that feel both timeless and contemporary.
-                  </motion.p>
 
                   <motion.div 
                     className="flex items-center gap-4 md:gap-6 mt-10 md:mt-16"

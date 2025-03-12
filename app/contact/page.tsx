@@ -40,15 +40,15 @@ export default function ContactPage() {
     <section id="contact" ref={containerRef} className="min-h-screen py-32 relative">
       <motion.div className="max-w-7xl mx-auto px-6 md:px-12" style={{ opacity, scale }}>
         <motion.h2
-          className="text-7xl md:text-7xl font-black tracking-tighter mb-24"
+          className="text-[clamp(3rem,15vw,15rem)] font-thin leading-[0.85] tracking-tighter  mb-24"
           initial={{ opacity: 0, y: 50 }}
           whileInView={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.8 }}
           viewport={{ once: true, margin: "-100px" }}
         >
-          Get in
+          Reach
           <br />
-          Touch
+          out
         </motion.h2>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-16 md:gap-24">
@@ -72,18 +72,10 @@ export default function ContactPage() {
                 viewport={{ once: true, margin: "-100px" }}
               >
                 <p className="text-sm uppercase tracking-widest text-gray-400 mb-2">Email</p>
-                <p className="text-xl">loulater99@proton.me</p>
+                <p className="text-xl">loulater99@gmail.me</p>
               </motion.div>
 
-              <motion.div
-                initial={{ opacity: 0, y: 20 }}
-                whileInView={{ opacity: 1, y: 0 }}
-                transition={{ duration: 0.5, delay: 0.3 }}
-                viewport={{ once: true, margin: "-100px" }}
-              >
-                <p className="text-sm uppercase tracking-widest text-gray-400 mb-2">Phone</p>
-                <p className="text-xl">+256 782 443 845</p>
-              </motion.div>
+            
 
               <motion.div
                 initial={{ opacity: 0, y: 20 }}

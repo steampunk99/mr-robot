@@ -42,7 +42,7 @@ export default function Home() {
       </section>
 
       {/* Projects Section */}
-      <section id="work" ref={workSectionRef} className="py-32 px-4 md:px-8 lg:px-16 bg-black">
+      <section id="work" ref={workSectionRef}>
         <motion.div
           initial={{ opacity: 0, y: 20 }}
           whileInView={{ opacity: 1, y: 0 }}
@@ -69,7 +69,7 @@ export default function Home() {
         </div>
 
         <div className="space-y-32">
-          {projects.projects.slice(0,3).map((project, index) => (
+          {projects.projects.slice(3,6).map((project, index) => (
             <ProjectCard key={project.id} project={project} index={index} />
           ))}
         </div>
