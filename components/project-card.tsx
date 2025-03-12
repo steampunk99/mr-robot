@@ -570,36 +570,7 @@ function ProjectDetail({
               )}
             </AnimatePresence>
             
-            {/* Project links */}
-            <div className="flex flex-wrap gap-3 mt-8 pt-4 border-t border-white/10">
-              {project.liveUrl && (
-                <motion.a
-                  href={project.liveUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-white/10 hover:bg-white/20 text-white rounded-lg px-4 py-2"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Eye className="size-4" />
-                  <span className="text-sm">Live Site</span>
-                </motion.a>
-              )}
-              
-              {project.githubUrl && (
-                <motion.a
-                  href={project.githubUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  className="flex items-center gap-2 bg-white/5 hover:bg-white/10 text-white rounded-lg px-4 py-2 border border-white/10"
-                  whileHover={{ scale: 1.05 }}
-                  whileTap={{ scale: 0.95 }}
-                >
-                  <Code className="size-4" />
-                  <span className="text-sm">Source Code</span>
-                </motion.a>
-              )}
-            </div>
+          
           </div>
         </div>
       </motion.div>

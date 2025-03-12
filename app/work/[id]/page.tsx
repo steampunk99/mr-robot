@@ -171,29 +171,7 @@ export default function ProjectPage({ params }: { params: { id: string } }) {
               animate={{ opacity: 1, y: 0 }}
               transition={{ duration: 0.8, delay: 0.6 }}
             >
-              <a
-                href={project.liveUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-2 px-5 py-3 border border-white/20 rounded-full text-sm hover:bg-white hover:text-black transition-all duration-300"
-                onMouseEnter={handleLinkEnter}
-                onMouseLeave={handleLinkLeave}
-              >
-                <ExternalLink size={16} className="group-hover:scale-110 transition-transform duration-300" />
-                <span>Live Preview</span>
-              </a>
-
-              <a
-                href={project.githubUrl}
-                target="_blank"
-                rel="noopener noreferrer"
-                className="group flex items-center gap-2 px-5 py-3 border border-white/20 rounded-full text-sm hover:bg-white/5 transition-all duration-300"
-                onMouseEnter={handleLinkEnter}
-                onMouseLeave={handleLinkLeave}
-              >
-                <Github size={16} />
-                <span>Source Code</span>
-              </a>
+             
             </motion.div>
           </div>
         </motion.div>

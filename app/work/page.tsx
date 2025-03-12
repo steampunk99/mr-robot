@@ -163,14 +163,14 @@ export default function ProjectsPage() {
       </div>
 
       {/* Header - Desktop & Mobile */}
-      <div className="fixed top-24 left-0 w-full z-30 p-6 md:p-10 flex justify-between items-center">
+      <div className="fixed top-24 left-0 w-full  p-6 md:p-10 flex justify-between items-center">
         <motion.h1 
-          className="text-[clamp(3rem,15vw,15rem)] font-thin leading-[0.85] tracking-tighter "
+          className="text-[clamp(3rem,15vw,15rem)]  font-thin leading-[0.85] tracking-tighter "
           initial={{ opacity: 0, y: -20 }}
           animate={{ opacity: 1, y: 0 }}
           transition={{ duration: 0.6, delay: 0.2 }}
         >
-          <span className="font-light">Work</span> 
+        Work
         </motion.h1>
 
         {!isMobile && (
@@ -476,14 +476,6 @@ export default function ProjectsPage() {
                     <span className="text-xs md:text-sm uppercase tracking-widest text-white/70"></span>
                   </motion.div>
 
-                  <motion.h2 
-                    className="text-4xl md:text-6xl font-serif font-light mb-8 md:mb-12 tracking-tight leading-tight"
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.3 }}
-                  >
-                    Embracing the beauty of <span className="italic">imperfection</span> and asymmetry
-                  </motion.h2>
 
 
                   <motion.div 
@@ -494,21 +486,12 @@ export default function ProjectsPage() {
                   >
                     <div className="size-[1px] bg-white/30 h-12 md:h-16" />
                     <div>
-                      <p className="text-xs md:text-sm uppercase tracking-widest text-white/70 mb-2">Est. 2017</p>
-                      <p className="text-xs md:text-sm text-white/50">Kampala - UG</p>
+                      <p className="text-xs md:text-sm uppercase tracking-widest text-white/70 mb-2">Swipe to browse</p>
+                      <p className="text-xs md:text-sm text-white/50">← keyboard  →</p>
                     </div>
                   </motion.div>
                   
-                  <motion.button
-                    onClick={handleNext}
-                    initial={{ opacity: 0, y: 20 }}
-                    animate={{ opacity: 1, y: 0 }}
-                    transition={{ duration: 0.8, delay: 0.7 }}
-                    className="mt-10 group flex items-center gap-2 text-white/70 hover:text-white transition-colors"
-                  >
-                    <span>Explore Projects</span>
-                    <ArrowRight size={16} className="group-hover:translate-x-1 transition-transform" />
-                  </motion.button>
+                 
                 </div>
               </motion.div>
             )}
