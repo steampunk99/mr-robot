@@ -1,9 +1,11 @@
 "use client"
 
-import { useState, useEffect } from "react"
-import { motion, AnimatePresence } from "framer-motion"
+import { useState, useEffect, useRef } from "react"
+import { motion, AnimatePresence, useInView } from "framer-motion"
 import Image from "next/image"
 import { ExternalLink, Github, ChevronRight, ChevronLeft } from "lucide-react"
+import { ParallaxElement, ParallaxLayer, ParallaxSection, ParallaxScale } from "@/components/parallax"
+import useParallax from "@/hooks/use-parallax"
 
 interface ProjectProps {
   project: {
@@ -26,6 +28,21 @@ interface ProjectProps {
 export default function ProjectCard({ project, index }: ProjectProps) {
   const [activeImageIndex, setActiveImageIndex] = useState(0)
   const [isHovering, setIsHovering] = useState(false)
+  const cardRef = useRef<HTMLDivElement>(null)
+  const isInView = useInView(cardRef, { once: false, amount: 0.2 })
+  
+  // Parallax effects
+  const { ref: imageRef, style: imageStyle } = useParallax({
+    direction: index % 2 === 0 ? "right" : "left",
+    speed: 0.5,
+    range: [0, 60]
+  })
+  
+  const { ref: contentRef, style: contentStyle } = useParallax({
+    direction: index % 2 === 0 ? "left" : "right",
+    speed: 0.3,
+    range: [0, 40]
+  })
 
   // Auto-rotate images every 5 seconds if not hovering
   useEffect(() => {
@@ -47,10 +64,88 @@ export default function ProjectCard({ project, index }: ProjectProps) {
   }
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl mx-auto px-10 h-full items-center">
-      {/* Left side - Image */}
-      <div
-        className="relative h-[70vh] w-full"
+    <div 
+      ref={cardRef}
+      className="grid grid-cols-1 md:grid-cols-2 gap-10 max-w-7xl mx-auto px-10 h-full items-center"
+    >
+      {/* Project details with parallax effects */}
+      <motion.div 
+        ref={contentRef}
+        style={contentStyle}
+        className={`${index % 2 === 1 ? "md:order-2" : ""}`}
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+        transition={{ duration: 0.8, delay: 0.2 }}
+      >
+        <ParallaxElement direction="up" speed={0.2} className="mb-4">
+          <div className="flex items-center space-x-2 text-neutral-400 mb-4">
+            <span className="text-sm">{project.year}</span>
+            <span className="text-neutral-700">•</span>
+            <span className="text-sm">{project.category}</span>
+          </div>
+        </ParallaxElement>
+        
+        <ParallaxElement direction="up" speed={0.3} delay={0.1}>
+          <h3 className="text-3xl md:text-4xl font-light mb-4">{project.title}</h3>
+        </ParallaxElement>
+        
+        <ParallaxElement direction="up" speed={0.4} delay={0.2}>
+          <p className="text-neutral-400 mb-8 leading-relaxed">
+            {project.description}
+          </p>
+        </ParallaxElement>
+
+        <ParallaxElement direction="up" speed={0.5} delay={0.3}>
+          <div className="flex flex-wrap gap-2 mb-8">
+            {project.tags.map((tag) => (
+              <span
+                key={tag}
+                className="text-xs px-3 py-1 border border-neutral-800 text-neutral-300 rounded-full"
+              >
+                {tag}
+              </span>
+            ))}
+          </div>
+        </ParallaxElement>
+
+        <ParallaxElement direction="up" speed={0.6} delay={0.4}>
+          <div className="flex items-center space-x-4">
+            {project.liveUrl && (
+              <a
+                href={project.liveUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 text-white hover:text-neutral-300 transition-colors"
+              >
+                <ExternalLink size={16} />
+                <span>Live Site</span>
+              </a>
+            )}
+            {project.githubUrl && (
+              <a
+                href={project.githubUrl}
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center space-x-2 text-white hover:text-neutral-300 transition-colors"
+              >
+                <Github size={16} />
+                <span>Source Code</span>
+              </a>
+            )}
+          </div>
+        </ParallaxElement>
+      </motion.div>
+
+      {/* Project image with parallax effect */}
+      <motion.div 
+        ref={imageRef}
+        style={imageStyle}
+        className={`relative aspect-video overflow-hidden border border-neutral-800 rounded-md ${
+          index % 2 === 1 ? "md:order-1" : ""
+        }`}
+        initial={{ opacity: 0, y: 30 }}
+        animate={isInView ? { opacity: 1, y: 0 } : { opacity: 0, y: 30 }}
+        transition={{ duration: 0.8 }}
         onMouseEnter={() => setIsHovering(true)}
         onMouseLeave={() => setIsHovering(false)}
       >
@@ -130,51 +225,6 @@ export default function ProjectCard({ project, index }: ProjectProps) {
             </>
           )}
         </motion.div>
-      </div>
-
-      {/* Right side - Content */}
-      <motion.div
-        className="flex flex-col h-full justify-center"
-        initial={{ opacity: 0, x: 20 }}
-        animate={{ opacity: 1, x: 0 }}
-        transition={{ duration: 0.6, delay: 0.2 }}
-      >
-        <div className="flex items-center gap-3 mb-4">
-          <div className="w-10 h-[1px] bg-white/50" />
-          <span className="text-xs uppercase tracking-widest text-white/70">
-            {project.category} — {project.year}
-          </span>
-        </div>
-
-        <h2 className="text-5xl font-serif font-light mb-6 tracking-tight">{project.title}</h2>
-
-        <p className="text-lg text-white/70 mb-8">{project.description}</p>
-
-        <p className="text-white/60 mb-10 leading-relaxed">{project.fullDescription}</p>
-
-        {/* Tags */}
-        <div className="flex flex-wrap gap-2 mb-8">
-          {project.tags.map((tag, i) => (
-            <span key={i} className="text-xs bg-white/5 px-3 py-1 rounded-full text-white/70">
-              {tag}
-            </span>
-          ))}
-        </div>
-
-        {/* Features */}
-        <div className="mb-10">
-          <h3 className="text-sm uppercase tracking-widest text-white/70 mb-4">Features</h3>
-          <ul className="grid grid-cols-1 md:grid-cols-2 gap-3">
-            {project.features.map((feature, i) => (
-              <li key={i} className="flex items-center gap-2 text-sm text-white/60">
-                <div className="size-1 rounded-full bg-white/30" />
-                {feature}
-              </li>
-            ))}
-          </ul>
-        </div>
-
-      
       </motion.div>
     </div>
   )

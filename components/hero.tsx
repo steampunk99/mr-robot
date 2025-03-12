@@ -24,167 +24,32 @@ const useMousePosition = () => {
   return mousePosition;
 };
 
-// Particle system component
-const ParticleField = () => {
-  const canvasRef = useRef<HTMLCanvasElement>(null);
-  const mousePosition = useMousePosition();
-  
-  useEffect(() => {
-    const canvas = canvasRef.current;
-    if (!canvas) return;
-    
-    const ctx = canvas.getContext("2d");
-    if (!ctx) return;
-    
-    // Set canvas dimensions
-    const setCanvasDimensions = () => {
-      if (!canvas) return;
-      canvas.width = window.innerWidth;
-      canvas.height = window.innerHeight;
-    };
-    
-    setCanvasDimensions();
-    window.addEventListener("resize", setCanvasDimensions);
-    
-    // Particle class
-    class Particle {
-      x: number;
-      y: number;
-      size: number;
-      speedX: number;
-      speedY: number;
-      opacity: number;
-      
-      constructor() {
-        this.x = Math.random() * canvas.width;
-        this.y = Math.random() * canvas.height;
-        this.size = Math.random() * 1.5 + 0.5;
-        this.speedX = Math.random() * 0.5 - 0.25;
-        this.speedY = Math.random() * 0.5 - 0.25;
-        this.opacity = Math.random() * 0.5 + 0.1;
-      }
-      
-      update() {
-        // Move particles
-        this.x += this.speedX;
-        this.y += this.speedY;
-        
-        // Wrap around edges
-        if (this.x < 0) this.x = canvas.width;
-        if (this.x > canvas.width) this.x = 0;
-        if (this.y < 0) this.y = canvas.height;
-        if (this.y > canvas.height) this.y = 0;
-        
-        // Mouse interaction
-        const dx = this.x - mousePosition.x;
-        const dy = this.y - mousePosition.y;
-        const distance = Math.sqrt(dx * dx + dy * dy);
-        
-        if (distance < 100) {
-          const angle = Math.atan2(dy, dx);
-          const force = (100 - distance) / 500;
-          this.x += Math.cos(angle) * force;
-          this.y += Math.sin(angle) * force;
-        }
-      }
-      
-      draw() {
-        if (!ctx) return;
-        ctx.fillStyle = `rgba(255, 255, 255, ${this.opacity})`;
-        ctx.beginPath();
-        ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
-        ctx.fill();
-      }
-    }
-    
-    // Create particles
-    const particles: Particle[] = [];
-    const particleCount = Math.min(window.innerWidth / 10, 100); // Responsive particle count
-    
-    for (let i = 0; i < particleCount; i++) {
-      particles.push(new Particle());
-    }
-    
-    // Animation loop
-    const animate = () => {
-      if (!ctx) return;
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
-      
-      // Update and draw particles
-      particles.forEach(particle => {
-        particle.update();
-        particle.draw();
-      });
-      
-      // Draw connections
-      ctx.strokeStyle = "rgba(255, 255, 255, 0.03)";
-      ctx.lineWidth = 0.5;
-      
-      for (let i = 0; i < particles.length; i++) {
-        for (let j = i + 1; j < particles.length; j++) {
-          const dx = particles[i].x - particles[j].x;
-          const dy = particles[i].y - particles[j].y;
-          const distance = Math.sqrt(dx * dx + dy * dy);
-          
-          if (distance < 100) {
-            ctx.beginPath();
-            ctx.moveTo(particles[i].x, particles[i].y);
-            ctx.lineTo(particles[j].x, particles[j].y);
-            ctx.stroke();
-          }
-        }
-      }
-      
-      requestAnimationFrame(animate);
-    };
-    
-    animate();
-    
-    return () => {
-      window.removeEventListener("resize", setCanvasDimensions);
-    };
-  }, [mousePosition]);
-  
-  return (
-    <canvas 
-      ref={canvasRef} 
-      className="absolute inset-0 w-full h-full pointer-events-none z-0"
-    />
-  );
-};
+
 
 // 3D rotating cube component
 const RotatingCube = () => {
   const cubeRef = useRef<HTMLDivElement>(null);
   const mousePosition = useMousePosition();
   
-  useEffect(() => {
-    const cube = cubeRef.current;
-    if (!cube) return;
-    
-    const handleMouseMove = () => {
-      if (!cube) return;
-      
-      // Calculate rotation based on mouse position
-      const rotateX = (mousePosition.y / window.innerHeight - 0.5) * 20;
-      const rotateY = (mousePosition.x / window.innerWidth - 0.5) * 20;
-      
-      cube.style.transform = `rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
-    };
-    
-    handleMouseMove();
-    
-    return () => {
-      // Cleanup
-    };
-  }, [mousePosition]);
+  // Add scroll-based animation
+  const { scrollYProgress } = useScroll();
+  const rotateX = useTransform(scrollYProgress, [0, 1], [0, 360]);
+  const rotateY = useTransform(scrollYProgress, [0, 1], [0, 720]);
+  const scale = useTransform(scrollYProgress, [0, 0.5], [1, 0.8]);
+  const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0.6]);
   
   return (
     <div className="w-full h-full perspective-1000 relative">
-      <div 
+      <motion.div 
         ref={cubeRef}
         className="w-full h-full relative transform-style-3d transition-transform duration-300"
-        style={{ transformStyle: "preserve-3d" }}
+        style={{ 
+          transformStyle: "preserve-3d",
+          rotateX,
+          rotateY,
+          scale,
+          opacity
+        }}
       >
         {/* Cube faces */}
         <div className="absolute inset-0 border border-white/10 transform translate-z-20" style={{ transform: "translateZ(20px)" }}></div>
@@ -193,35 +58,18 @@ const RotatingCube = () => {
         <div className="absolute inset-0 border border-white/10 rotate-y-90 -translate-x-20" style={{ transform: "rotateY(90deg) translateX(-20px)" }}></div>
         <div className="absolute inset-0 border border-white/10 rotate-x-90 translate-y-20" style={{ transform: "rotateX(90deg) translateY(20px)" }}></div>
         <div className="absolute inset-0 border border-white/10 rotate-x-90 -translate-y-20" style={{ transform: "rotateX(90deg) translateY(-20px)" }}></div>
-      </div>
+      </motion.div>
     </div>
   );
 };
 
 // Magnetic button component
-const MagneticButton = ({ children, className = "", ...props }: React.ButtonHTMLAttributes<HTMLButtonElement> & { children: React.ReactNode }) => {
+const MagneticButton = ({ children, className = "", ...props }: React.ComponentPropsWithoutRef<typeof motion.button> & { children: React.ReactNode }) => {
   const buttonRef = useRef<HTMLButtonElement>(null);
   const [position, setPosition] = useState({ x: 0, y: 0 });
   const [isHovered, setIsHovered] = useState(false);
   
-  const handleMouseMove = (e: React.MouseEvent<HTMLButtonElement>) => {
-    if (!buttonRef.current) return;
-    
-    const rect = buttonRef.current.getBoundingClientRect();
-    const x = e.clientX - rect.left - rect.width / 2;
-    const y = e.clientY - rect.top - rect.height / 2;
-    
-    setPosition({ x, y });
-  };
-  
-  const handleMouseEnter = () => {
-    setIsHovered(true);
-  };
-  
-  const handleMouseLeave = () => {
-    setIsHovered(false);
-    setPosition({ x: 0, y: 0 });
-  };
+
   
   const strength = 20;
   
@@ -229,9 +77,19 @@ const MagneticButton = ({ children, className = "", ...props }: React.ButtonHTML
     <motion.button
       ref={buttonRef}
       className={`relative overflow-hidden ${className}`}
-      onMouseMove={handleMouseMove}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
+      onMouseEnter={() => setIsHovered(true)}
+      onMouseLeave={() => {
+        setIsHovered(false);
+        setPosition({ x: 0, y: 0 });
+      }}
+      onMouseMove={(e) => {
+        if (buttonRef.current) {
+          const rect = buttonRef.current.getBoundingClientRect();
+          const x = e.clientX - rect.left - rect.width / 2;
+          const y = e.clientY - rect.top - rect.height / 2;
+          setPosition({ x, y });
+        }
+      }}
       animate={{
         x: isHovered ? position.x / strength : 0,
         y: isHovered ? position.y / strength : 0,
@@ -291,68 +149,38 @@ export default function HeroSection() {
   const y = useTransform(scrollYProgress, [0, 1], [0, 300]);
   const opacity = useTransform(scrollYProgress, [0, 0.5], [1, 0]);
   
-  // Custom cursor
-  const cursorX = useMotionValue(-100);
-  const cursorY = useMotionValue(-100);
-  const cursorSize = useMotionValue(32);
+
+
   
-  const springConfig = { damping: 25, stiffness: 700 };
-  const cursorXSpring = useSpring(cursorX, springConfig);
-  const cursorYSpring = useSpring(cursorY, springConfig);
-  const cursorSizeSpring = useSpring(cursorSize, springConfig);
-  
-  useEffect(() => {
-    const updateCursorPosition = () => {
-      cursorX.set(mousePosition.x - 16);
-      cursorY.set(mousePosition.y - 16);
-    };
-    
-    updateCursorPosition();
-    
-    // Loading animation
-    const timer = setTimeout(() => {
-      setIsLoaded(true);
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [mousePosition, cursorX, cursorY]);
-  
-  // Handle cursor hover states
-  const handleMouseEnter = () => {
-    cursorSize.set(80);
-  };
-  
-  const handleMouseLeave = () => {
-    cursorSize.set(32);
-  };
+
   
   // Loading animation
-  if (!isLoaded) {
-    return (
-      <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
-        <motion.div
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          transition={{ duration: 0.5 }}
-          className="text-white text-2xl font-light tracking-widest"
-        >
-          <div className="w-12 h-12 relative">
-            <motion.div 
-              className="absolute inset-0 border border-white/20"
-              animate={{ rotate: 90 }}
-              transition={{ duration: 1.2, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}
-            />
-            <motion.div 
-              className="absolute inset-0 border border-white/40"
-              initial={{ rotate: 45 }}
-              animate={{ rotate: -45 }}
-              transition={{ duration: 1.2, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}
-            />
-          </div>
-        </motion.div>
-      </div>
-    );
-  }
+  // if (!isLoaded) {
+  //   return (
+  //     <div className="fixed inset-0 bg-black flex items-center justify-center z-50">
+  //       <motion.div
+  //         initial={{ opacity: 0, scale: 0.9 }}
+  //         animate={{ opacity: 1, scale: 1 }}
+  //         transition={{ duration: 0.5 }}
+  //         className="text-white text-2xl font-light tracking-widest"
+  //       >
+  //         <div className="w-12 h-12 relative">
+  //           <motion.div 
+  //             className="absolute inset-0 border border-white/20"
+  //             animate={{ rotate: 90 }}
+  //             transition={{ duration: 1.2, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}
+  //           />
+  //           <motion.div 
+  //             className="absolute inset-0 border border-white/40"
+  //             initial={{ rotate: 45 }}
+  //             animate={{ rotate: -45 }}
+  //             transition={{ duration: 1.2, ease: "easeInOut", repeat: Infinity, repeatType: "loop" }}
+  //           />
+  //         </div>
+  //       </motion.div>
+  //     </div>
+  //   );
+  // }
   
   return (
     <motion.div 
@@ -362,33 +190,31 @@ export default function HeroSection() {
       animate={{ opacity: 1 }}
       transition={{ duration: 1 }}
     >
-      {/* Custom cursor */}
-      <motion.div
-        className="fixed top-0 left-0 z-50 rounded-full pointer-events-none mix-blend-difference"
-        style={{
-          width: cursorSizeSpring,
-          height: cursorSizeSpring,
-          x: cursorXSpring,
-          y: cursorYSpring,
-          backgroundColor: "rgba(255, 255, 255, 0.1)",
-          border: "1px solid rgba(255, 255, 255, 0.3)"
-        }}
-      />
+    
       
-      {/* Particle system */}
-      <ParticleField />
+   
       
       {/* Background elements */}
       <div className="absolute inset-0">
         {/* Noise texture */}
         <div className="absolute inset-0 opacity-[0.03] bg-[url('data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIzMDAiIGhlaWdodD0iMzAwIj48ZmlsdGVyIGlkPSJhIiB4PSIwIiB5PSIwIj48ZmVUdXJidWxlbmNlIGJhc2VGcmVxdWVuY3k9Ii43NSIgc3RpdGNoVGlsZXM9InN0aXRjaCIgdHlwZT0iZnJhY3RhbE5vaXNlIi8+PGZlQ29sb3JNYXRyaXggdHlwZT0ic2F0dXJhdGUiIHZhbHVlcz0iMCIvPjwvZmlsdGVyPjxwYXRoIGQ9Ik0wIDBoMzAwdjMwMEgweiIgZmlsdGVyPSJ1cmwoI2EpIiBvcGFjaXR5PSIuMDUiLz48L3N2Zz4=')]"></div>
         
-        {/* Gradient overlay */}
-        <div className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff05_0,transparent_70%)]"></div>
+        {/* Gradient overlay with parallax effect */}
+        <motion.div 
+          className="absolute inset-0 bg-[radial-gradient(circle_at_center,#ffffff05_0,transparent_70%)]"
+          style={{
+            y: useTransform(scrollYProgress, [0, 1], [0, -50]),
+            scale: useTransform(scrollYProgress, [0, 1], [1, 1.1])
+          }}
+        ></motion.div>
         
-        {/* Animated gradient */}
+        {/* Animated gradient with enhanced parallax */}
         <motion.div 
           className="absolute inset-0 opacity-10"
+          style={{
+            y: useTransform(scrollYProgress, [0, 1], [0, -100]),
+            scale: useTransform(scrollYProgress, [0, 1], [1, 1.2])
+          }}
           animate={{ 
             background: [
               "radial-gradient(circle at 20% 20%, #ffffff10 0%, transparent 50%)",
@@ -401,8 +227,14 @@ export default function HeroSection() {
           transition={{ duration: 20, repeat: Infinity, ease: "linear" }}
         />
         
-        {/* Grid lines */}
-        <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:100px_100px]"></div>
+        {/* Grid lines with parallax effect */}
+        <motion.div 
+          className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff03_1px,transparent_1px),linear-gradient(to_bottom,#ffffff03_1px,transparent_1px)] bg-[size:100px_100px]"
+          style={{
+            y: useTransform(scrollYProgress, [0, 1], [0, -30]),
+            x: useTransform(scrollYProgress, [0, 1], [0, -10])
+          }}
+        ></motion.div>
       </div>
       
       {/* Main content */}
@@ -458,8 +290,7 @@ export default function HeroSection() {
             >
               <MagneticButton
                 className="rounded-none border border-white/20 bg-white text-black px-8 py-3 text-sm tracking-wider hover:bg-transparent hover:text-white transition-all duration-300 group"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
+              
               >
                 <span className="flex items-center">
                   EXPLORE WORK
@@ -469,8 +300,7 @@ export default function HeroSection() {
               
               <MagneticButton
                 className="rounded-none border border-white/20 bg-transparent text-white px-8 py-3 text-sm tracking-wider hover:bg-white hover:text-black transition-all duration-300 group"
-                onMouseEnter={handleMouseEnter}
-                onMouseLeave={handleMouseLeave}
+              
               >
                 <span className="flex items-center">
                   ABOUT ME
@@ -487,8 +317,7 @@ export default function HeroSection() {
               animate={{ opacity: 1, scale: 1 }}
               transition={{ duration: 1, delay: 2 }}
               className="relative aspect-square"
-              onMouseEnter={handleMouseEnter}
-              onMouseLeave={handleMouseLeave}
+           
             >
               {/* Abstract 3D element */}
               <div className="absolute inset-0 flex items-center justify-center">

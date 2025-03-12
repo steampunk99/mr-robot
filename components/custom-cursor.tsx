@@ -44,10 +44,10 @@ const CustomCursor: React.FC = () => {
   const interactionCounter = useRef(0);
 
   // Size configurations for cursor elements
-  const innerSize = 24;
-  const outerSize = 50;
+  const innerSize = 12;
+  const outerSize = 60;
   // Larger size when showing text
-  const expandedSize = 180;
+  const expandedSize = 160;
 
   useEffect(() => {
     console.log("CustomCursor component mounted");
@@ -77,7 +77,7 @@ const CustomCursor: React.FC = () => {
       // Animate outer cursor - make it bigger if we have text
       outerControls.start({
         ...cursorAnimationConfig.outer.hover,
-        scale: hoverText ? 3 : cursorAnimationConfig.outer.hover.scale,
+        scale: hoverText ? 6 : cursorAnimationConfig.outer.hover.scale,
         transition: cursorAnimationConfig.outer.transition
       });
       
@@ -177,7 +177,7 @@ const CustomCursor: React.FC = () => {
           y: cursorY,
           zIndex: 9999,
           mixBlendMode: "difference",
-          boxShadow: "0 0 5px rgba(255,255,255,0.5)"
+          boxShadow: "0 0 5px rgba(255,255,255,0.3)"
         }}
       />
 
@@ -197,7 +197,7 @@ const CustomCursor: React.FC = () => {
           y: outerY,
           zIndex: 9998,
           mixBlendMode: "exclusion",
-          boxShadow: "0 0 10px rgba(255,255,255,0.2)",
+          boxShadow: "0 0 10px rgba(255,255,255,0.7)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center"
