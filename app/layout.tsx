@@ -48,7 +48,7 @@ export default function RootLayout({
           
             <Navigation />
             <InteractiveRobot />
-            {/* <CustomCursor/> */}
+            <CustomCursor/>
             <PageTransition>{children}</PageTransition>
           </main>
         </SmoothScrollProvider>

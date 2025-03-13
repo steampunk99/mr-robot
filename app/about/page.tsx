@@ -268,8 +268,12 @@ I've come to find inspiration in the simplicity of lines, the balance of empty s
                   >
                     <h3 className="text-xl font-light tracking-wide mb-4">Philosophy</h3>
                     <p className="text-white/60 leading-relaxed">
-                      I approach design and development with a focus on finding beauty in simplicity and the space between elements. 
-                      Every pixel, every interaction, and every line of code is crafted with intention and purpose.
+                
+With a focus on motion and interaction, I create interfaces that feel alive and responsive, elevating the user experience beyond the static page.
+
+My approach combines technical precision with creative intuition, resulting in work that is both visually compelling and technically sound.
+
+
                     </p>
                   </motion.div>
                   

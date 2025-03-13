@@ -17,12 +17,12 @@ interface RobotMessage {
 
 const robotMessages: Record<string, RobotMessage[]> = {
   home: [
-    { text: "Welcome to my portfolio!", duration: 3000 },
-    { text: "Scroll down to explore", duration: 3000 }
+    { text: "Welcome to my portfolio!", duration: 4000 },
+    { text: "I'll be your guide", duration: 4000 }
   ],
   about: [
-    { text: "Let me tell you about myself", duration: 3000 },
-    { text: "I specialize in creative development", duration: 3000 }
+    { text: "Let me tell you about myself", duration: 5000 },
+    { text: "I specialize in creative development..wait we're here already, bye", duration: 5000 }
   ],
   work: [
     { text: "Check out my latest projects", duration: 3000 },

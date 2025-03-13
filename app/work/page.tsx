@@ -142,7 +142,7 @@ export default function ProjectsPage() {
           loop
           muted
           playsInline
-          src="/bg1.mp4"
+          src="/purple.mp4"
         />
         <div className="absolute inset-0 bg-gradient-radial from-transparent to-black/90"></div>
       </motion.div>

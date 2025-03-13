@@ -106,7 +106,7 @@ export default function HeroSection() {
    
       
       {/* Minimal grid background */}
-      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff11_1px,transparent_1px),linear-gradient(to_bottom,#ffffff11_1px,transparent_1px)] bg-[size:420px_300px]" />
+      <div className="absolute inset-0 bg-[linear-gradient(to_right,#ffffff11_1px,transparent_1px),linear-gradient(to_bottom,#ffffff11_1px,transparent_1px)] bg-[size:450px_300px]" />
       
   
       

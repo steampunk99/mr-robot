@@ -279,7 +279,7 @@ export function Navigation() {
         {isMenuOpen && (
           <motion.div
             ref={menuRef}
-            className="fixed inset-0 z-40 bg-black/95"
+            className="fixed inset-0 z-[40] bg-black/95"
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
@@ -376,20 +376,20 @@ export function Navigation() {
                       >
                         <h3 className="text-sm text-white/40 uppercase tracking-wider mb-6">Lou Later</h3>
                         
-                        <Link href="/about" className="block relative group" onClick={() => setIsMenuOpen(false)}>
-                          <div className="overflow-hidden rounded-lg mb-3 border border-white/10">
-                            <motion.div
-                              whileHover={{ scale: 1.05 }}
-                              transition={{ duration: 0.6, ease: [0.33, 1, 0.68, 1] }}
-                              className="aspect-video bg-white/5 relative overflow-hidden"
+                        <div className="block relative " >
+                          <div className="overflow-hidden rounded-lg mb-3 ">
+                            <div
+                            
+                              className="aspect-video  relative overflow-hidden"
                             >
-                              <div className="absolute inset-0  z-10" />
-                              <div 
-                                className="absolute inset-0 bg-[url('/profilepic.jpg')] bg-fill bg-no-repeat bg-center"
+                              <div className="absolute inset-0  " />
+                              <SteampunkRobot isLogo={false}   width={250} 
+                  height={250}
+                                className="absolute  bg-center"
                               />
-                            </motion.div>
+                            </div>
                           </div>
-                        </Link>
+                        </div>
                       </motion.div>
                       
                       {/* Contact info */}
