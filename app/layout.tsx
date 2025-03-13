@@ -1,9 +1,9 @@
-import type React from "react"
+import React from "react"
 import type { Metadata } from "next"
 import { Space_Grotesk, Cinzel, Major_Mono_Display } from "next/font/google"
 import { Navigation } from "@/components/navigation"
-import { PageTransition } from "@/components/page-transition"
 import { SmoothScrollProvider } from "@/context/smooth-scroll"
+import PreloaderWrapper from "@/components/preloader/preloader-wrapper"
 
 import "./globals.css"
 import CustomCursor from "@/components/custom-cursor"
@@ -44,12 +44,12 @@ export default function RootLayout({
     <html lang="en" className={`${spaceGrotesk.variable} ${cinzel.variable} ${majorMono.variable}`}>
       <body className={`${spaceGrotesk.className} font-sans bg-black text-white`}> 
         <SmoothScrollProvider>
+          <PreloaderWrapper />
           <main> 
-          
             <Navigation />
             <InteractiveRobot />
             <CustomCursor/>
-            <PageTransition>{children}</PageTransition>
+            {children}
           </main>
         </SmoothScrollProvider>
       </body>

@@ -11,6 +11,7 @@ import ProjectCard from "@/components/project-card"
 import { ContactSection } from "@/components/home/contact"
 import HeroSection from "@/components/home/hero"
 import useMousePosition from "@/hooks/use-mouse-position"
+ 
 
 
 export default function Home() {

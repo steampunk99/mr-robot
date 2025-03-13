@@ -4,6 +4,7 @@ import { useState, useEffect, useRef } from "react";
 import { motion, useScroll, useTransform, AnimatePresence, useMotionTemplate, useSpring } from "framer-motion";
 import Link from "next/link";
 import { ArrowRight, ArrowDown } from 'lucide-react';
+import ScrollMarquee from "./marquee";
 
 // Custom hook for mouse position with smoothing
 const useMousePosition = () => {
@@ -98,7 +99,7 @@ export default function HeroSection() {
   return (
     <motion.section 
       ref={containerRef}
-      className="relative min-h-[100vh] w-full overflow-hidden bg-black flex items-center"
+      className="relative min-h-[130vh] w-full overflow-hidden bg-black flex items-center"
       initial={{ opacity: 0 }}
       animate={{ opacity: 1 }}
       transition={{ duration: 1.2, ease: [0.215, 0.61, 0.355, 1] }}
@@ -213,6 +214,12 @@ export default function HeroSection() {
             </motion.div>
           </motion.div>
         </motion.div>
+        <div className="mt-24">
+        <ScrollMarquee
+          largeText="I WORK WITH GAME CHANGING BRANDS"
+          smallTexts={["Experience", "Design", "Creative", "R&D", "Leadership"]}
+        />
+</div>
       </div>
       
       {/* Scroll indicator */}
