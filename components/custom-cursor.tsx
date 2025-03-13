@@ -32,8 +32,8 @@ const CustomCursor: React.FC = () => {
   const [cursorText, setCursorText] = useState("");
 
   // Smooth delay effect for the outer ring
-  const outerX = useSpring(cursorX, { stiffness: 100, damping: 20 });
-  const outerY = useSpring(cursorY, { stiffness: 100, damping: 20 });
+  const outerX = useSpring(cursorX, { stiffness: 100, damping: 22 });
+  const outerY = useSpring(cursorY, { stiffness: 100, damping: 22 });
 
   // Animation controls
   const innerControls = useAnimation();
@@ -44,10 +44,10 @@ const CustomCursor: React.FC = () => {
   const interactionCounter = useRef(0);
 
   // Size configurations for cursor elements
-  const innerSize = 10;
+  const innerSize = 12;
   const outerSize = 30;
   // Larger size when showing text
-  const expandedSize = 80;
+  const expandedSize = 140;
 
   useEffect(() => {
     console.log("CustomCursor component mounted");
@@ -57,43 +57,8 @@ const CustomCursor: React.FC = () => {
       cursorY.set(e.clientY);
     };
 
-    const handleHoverStart = (e: MouseEvent) => {
-      interactionCounter.current += 1;
-      console.log(`Hover start detected on: ${(e.target as HTMLElement).tagName}, count: ${interactionCounter.current}`);
-      
-      // Get the data-cursor-text attribute or use a default
-      const targetElement = e.target as HTMLElement;
-      const hoverText = targetElement.getAttribute('data-cursor-text') || "";
-      
-      // Update cursor text and animate
-      setCursorText(hoverText);
-      
-      // Animate inner cursor
-      innerControls.start({
-        ...cursorAnimationConfig.inner.hover,
-        transition: cursorAnimationConfig.inner.transition
-      });
-      
-      // Animate outer cursor - make it bigger if we have text
-      outerControls.start({
-        ...cursorAnimationConfig.outer.hover,
-        scale: hoverText ? 3 : cursorAnimationConfig.outer.hover.scale,
-        transition: cursorAnimationConfig.outer.transition
-      });
-      
-      // Animate text visibility
-      if (hoverText) {
-        textControls.start({
-          ...cursorAnimationConfig.text.hover,
-          transition: cursorAnimationConfig.text.transition
-        });
-      }
-    };
-
-    const handleHoverEnd = (e: MouseEvent) => {
-      console.log(`Hover end detected on: ${(e.target as HTMLElement).tagName}`);
-      
-      // Return to default states
+    // Function to reset cursor to default state
+    const resetCursorState = () => {
       innerControls.start({
         ...cursorAnimationConfig.inner.default,
         transition: cursorAnimationConfig.inner.transition
@@ -113,6 +78,56 @@ const CustomCursor: React.FC = () => {
       setTimeout(() => setCursorText(""), 300);
     };
 
+    const handleHoverStart = (e: Event) => {
+      const mouseEvent = e as MouseEvent;
+      interactionCounter.current += 1;
+      console.log(`Hover start detected on: ${(mouseEvent.target as HTMLElement).tagName}, count: ${interactionCounter.current}`);
+      
+      // Get the data-cursor-text attribute or use a default
+      const targetElement = mouseEvent.target as HTMLElement;
+      const hoverText = targetElement.getAttribute('data-cursor-text') || "";
+      
+      // Update cursor text and animate
+      setCursorText(hoverText);
+      
+      // Animate inner cursor
+      innerControls.start({
+        ...cursorAnimationConfig.inner.hover,
+        transition: cursorAnimationConfig.inner.transition
+      });
+      
+      // Animate outer cursor - make it bigger if we have text
+      outerControls.start({
+        ...cursorAnimationConfig.outer.hover,
+        scale: hoverText ? 6 : cursorAnimationConfig.outer.hover.scale,
+        transition: cursorAnimationConfig.outer.transition
+      });
+      
+      // Animate text visibility
+      if (hoverText) {
+        textControls.start({
+          ...cursorAnimationConfig.text.hover,
+          transition: cursorAnimationConfig.text.transition
+        });
+      }
+    };
+
+    const handleHoverEnd = (e: Event) => {
+      const mouseEvent = e as MouseEvent;
+      console.log(`Hover end detected on: ${(mouseEvent.target as HTMLElement).tagName}`);
+      resetCursorState();
+    };
+
+    // New handler for click events to reset cursor state before navigation
+    const handleClick = (e: Event) => {
+      const mouseEvent = e as MouseEvent;
+      const targetElement = mouseEvent.target as HTMLElement;
+      console.log(`Click detected on: ${targetElement.tagName}`);
+      
+      // Reset cursor immediately for navigation
+      resetCursorState();
+    };
+
     window.addEventListener("mousemove", moveCursor);
 
     const attachInteractionListeners = () => {
@@ -125,14 +140,15 @@ const CustomCursor: React.FC = () => {
         el.addEventListener("mouseenter", handleHoverStart);
         el.addEventListener("mouseleave", handleHoverEnd);
         
+        // Add click listener to handle navigation
+        el.addEventListener("click", handleClick);
+        
         // If element doesn't have data-cursor-text, add a default based on element type
         if (!el.hasAttribute("data-cursor-text")) {
           if (el.tagName === "A") {
-            el.setAttribute("data-cursor-text", "Explore");
+            el.setAttribute("data-cursor-text", "Click me");
           } else if (el.tagName === "BUTTON") {
-            el.setAttribute("data-cursor-text", "Do it");
-          } else if (el.tagName === "STEAMPUNKROBOT") {
-            el.setAttribute("data-cursor-robot", "zzzzzz");
+            el.setAttribute("data-cursor-text", "Tap me");
           }
         }
         
@@ -154,6 +170,7 @@ const CustomCursor: React.FC = () => {
       document.querySelectorAll("[cursor-listener='true']").forEach((el) => {
         el.removeEventListener("mouseenter", handleHoverStart);
         el.removeEventListener("mouseleave", handleHoverEnd);
+        el.removeEventListener("click", handleClick);
         el.removeAttribute("cursor-listener");
       });
       
@@ -172,7 +189,6 @@ const CustomCursor: React.FC = () => {
           left: -innerSize / 2,
           width: innerSize,
           height: innerSize,
-        
           borderRadius: "50%",
           background: "radial-gradient(circle, rgba(255,255,255,0.8) 10%, rgba(255,255,255,0) 80%)",
           pointerEvents: "none",
@@ -180,7 +196,7 @@ const CustomCursor: React.FC = () => {
           y: cursorY,
           zIndex: 9999,
           mixBlendMode: "difference",
-          boxShadow: "0 0 5px rgba(255,255,255,0.5)"
+          boxShadow: "0 0 5px rgba(255,255,255,0.3)"
         }}
       />
 
@@ -198,10 +214,9 @@ const CustomCursor: React.FC = () => {
           pointerEvents: "none",
           x: outerX,
           y: outerY,
-          
           zIndex: 9998,
           mixBlendMode: "exclusion",
-          boxShadow: "0 0 10px rgba(255,255,255,0.9)",
+          boxShadow: "0 0 10px rgba(255,255,255,0.7)",
           display: "flex",
           justifyContent: "center",
           alignItems: "center"
@@ -216,14 +231,16 @@ const CustomCursor: React.FC = () => {
           position: "fixed",
           pointerEvents: "none",
           x: outerX,
-          display:"none",
           y: outerY,
           zIndex: 10000,
           fontSize: "14px",
           fontWeight: "bold",
-        
-          padding: "12px 8px",
-          color: "#FFFFFFFF",
+          fontFamily: "monospace",
+          display: "none",
+          justifyContent: "center",
+          alignItems: "center",
+          padding: "8px 8px",
+          color: "#00FF00",
           textShadow: "0 0 3px rgba(0,0,0,0.8)",
           textAlign: "center",
           whiteSpace: "nowrap",
