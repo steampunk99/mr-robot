@@ -201,7 +201,7 @@ const AboutSection = () => {
                 <div className="absolute inset-0 opacity-70 mix-blend-luminosity">
                
                   <Image
-                    src="/profilepic.jpg"
+                    src="/profilepic2.jpg"
                     alt="Designer portrait"
                     fill
                     style={{ objectFit: "cover" }}
