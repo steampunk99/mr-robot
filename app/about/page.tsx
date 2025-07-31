@@ -84,7 +84,7 @@ export default function AboutPage() {
                   transition={{ duration: 0.8, delay: 1.6 }}
                   className="text-white/60 text-lg max-w-md mb-8"
                 >
-                My name is Bonnie Lou.
+                My name is Godwin Lex Sserwada.
 
                 </motion.p>
                 <motion.p
