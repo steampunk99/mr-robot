@@ -72,7 +72,7 @@ export default function ContactPage() {
                 viewport={{ once: true, margin: "-100px" }}
               >
                 <p className="text-sm uppercase tracking-widest text-gray-400 mb-2">Email</p>
-                <p className="text-xl">loulater99@gmail.me</p>
+                <p className="text-xl">sserwadagodwin@gmail.com</p>
               </motion.div>
 
             
