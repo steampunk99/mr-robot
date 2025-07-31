@@ -81,7 +81,7 @@ export default function HeroSection() {
   const containerRef = useRef<HTMLDivElement>(null);
   const mousePosition = useMousePosition();
   const [activeCharIndex, setActiveCharIndex] = useState(-1);
-  const heroText = "Lou";
+  const heroText = "Lex";
   
   // Split text into characters for animation
   const characters = heroText.split("");
