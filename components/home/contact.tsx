@@ -65,7 +65,7 @@ export function ContactSection() {
   }
   
   const copyEmail = () => {
-    navigator.clipboard.writeText("loulater99@gmail.com")
+    navigator.clipboard.writeText("sserwadagodwin@gmail.com")
     setCopied(true)
     setTimeout(() => setCopied(false), 2000)
   }
@@ -127,7 +127,7 @@ export function ContactSection() {
               <div>
                 <p className="text-sm uppercase tracking-[0.2em] text-white/50 mb-3">Email</p>
                 <div className="flex items-center">
-                  <p className="text-2xl font-light mr-3">loulater99@gmail.com</p>
+                  <p className="text-2xl font-light mr-3">sserwadagodwin@gmail.com</p>
                   <motion.button
                     onClick={copyEmail}
                     whileHover={{ scale: 1.1 }}
