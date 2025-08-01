@@ -180,7 +180,7 @@ export default function ContactPage() {
         >
           <div className="flex flex-col md:flex-row justify-between items-center">
             <p className="text-sm text-gray-400 mb-4 md:mb-0">
-              © {new Date().getFullYear()} Bonnie. L All rights reserved.
+              © {new Date().getFullYear()} Godwin Lex - All rights reserved.
             </p>
 
             <div className="flex space-x-6">
